@@ -1,0 +1,21 @@
+.tab-trigger {
+  background-color: rgb(137, 191, 203);
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px;
+  cursor: pointer;
+  width: 100px;
+}
+
+.tab-trigger:hover {
+  background-color: bisque;
+}
+
+.btn:hover {
+  cursor: pointer;
+  box-shadow: 1px 1px 5px black;
+}
+
+.input-error {
+  color: red;
+}
