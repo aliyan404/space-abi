@@ -1,32 +1,38 @@
-"use client";
-import { useAccount, useConnect, useDisconnect } from "@starknet-react/core";
-import { useMemo } from "react";
-import { Button } from "./ui/Button";
+'use client'
+import { useAccount, useConnect, useDisconnect } from '@starknet-react/core'
+import { useEffect, useMemo, useState } from 'react'
+import { Button } from './ui/Button'
 
 function WalletConnected() {
-  const { address } = useAccount();
-  const { disconnect } = useDisconnect();
+  const { address } = useAccount()
+  const { disconnect } = useDisconnect()
 
   const shortenedAddress = useMemo(() => {
-    if (!address) return "";
-    return `${address.slice(0, 6)}...${address.slice(-4)}`;
-  }, [address]);
+    if (!address) return ''
+    return `${address.slice(0, 6)}...${address.slice(-4)}`
+  }, [address])
 
   return (
     <div>
       <span>Connected: {shortenedAddress}</span>
       <Button onClick={() => disconnect()}>Disconnect</Button>
     </div>
-  );
+  )
 }
 
 function ConnectWallet() {
-  const { connectors, connect } = useConnect();
+  const { connectors, connect } = useConnect()
+
+  const [mountedConnectors, setMountedConnectors] = useState<any>([])
+
+  useEffect(() => {
+    setMountedConnectors(connectors)
+  }, [connectors])
 
   return (
     <div>
       <span>Choose a wallet: </span>
-      {connectors?.map((connector) => {
+      {mountedConnectors?.map((connector: any) => {
         return (
           <Button
             key={connector?.id}
@@ -35,14 +41,14 @@ function ConnectWallet() {
           >
             {connector.id}
           </Button>
-        );
+        )
       })}
     </div>
-  );
+  )
 }
 
 export default function WalletBar() {
-  const { address } = useAccount();
+  const { address } = useAccount()
 
-  return address ? <WalletConnected /> : <ConnectWallet />;
+  return address ? <WalletConnected /> : <ConnectWallet />
 }

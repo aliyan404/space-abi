@@ -11,11 +11,6 @@
   background-color: bisque;
 }
 
-.btn:hover {
-  cursor: pointer;
-  box-shadow: 1px 1px 5px black;
-}
-
 .input-error {
   color: red;
 }

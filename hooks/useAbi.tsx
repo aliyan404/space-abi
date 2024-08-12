@@ -4,19 +4,21 @@ import { useEffect, useState } from 'react'
 import { Abi } from 'starknet'
 
 export default function useAbi(contractAddress: string) {
-  const [abi, setAbi] = useState<Abi>([])
+  const [abi, setAbi] = useState<Abi | undefined>(undefined)
+
+  const updateAbi = async (contractAddress: string) => {
+    try {
+      if (!contractAddress) return
+      const { abi } = await provider.getClassAt(contractAddress)
+      setAbi(abi)
+    } catch (error) {
+      console.log('updateAbi error:', error)
+    }
+  }
 
   useEffect(() => {
-    const getAbi = async () => {
-      try {
-        const { abi } = await provider.getClassAt(contractAddress)
-        setAbi(abi)
-      } catch (error) {
-        console.log('getAbi error:', error)
-      }
-    }
-    getAbi()
+    updateAbi(contractAddress)
   }, [contractAddress])
 
-  return { abi }
+  return { abi, setAbi, updateAbi }
 }
