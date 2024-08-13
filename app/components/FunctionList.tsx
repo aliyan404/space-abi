@@ -1,8 +1,7 @@
 'use client'
 
 import useFunction from '@/hooks/useFunction'
-import { Button } from '@nextui-org/button'
-import { Listbox, ListboxSection, ListboxItem } from '@nextui-org/listbox'
+import { Listbox, ListboxItem } from '@nextui-org/listbox'
 
 export default function FunctionList({
   contractAddress,
@@ -12,7 +11,6 @@ export default function FunctionList({
   onSelect: any
 }) {
   const functionsData = useFunction(contractAddress)
-  console.log('functionsData: ', functionsData)
 
   return (
     <div className="flex gap-4 bg-slate-400 rounded-lg">
