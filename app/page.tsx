@@ -1,108 +1,39 @@
 'use client'
 
+import { AddrContext } from '@/components/addrContext'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useState } from 'react'
-import '@/style/AbiForm.css'
-import '@/style/FunctionForm.css'
-import FunctionList from '@/app/components/FunctionList'
-import FunctionForm from './components/FunctionForm'
-import useAbi from '@/hooks/useAbi'
-import { CallbackReturnType } from '@/types/CallbackReturnType'
-import { Contract } from 'starknet'
-import { sepoliaProvider } from '@/utils/rpc-provider'
-import { useAccount } from '@starknet-react/core'
+import { useRouter } from 'next/navigation'
+import { useContext, useState } from 'react'
 
 export default function Home() {
   const [contractAddress, setContractAddress] = useState<string>(
     '0x031b79a7d00cae6fba1c6c2da59c00ea8764eeff1235b8115ed04229211c590e'
   )
-  const { abi } = useAbi(contractAddress)
-  const [selectFnctions, setSelectFunctions] = useState<any>([])
-  const [response, setResponse] = useState<Record<string, React.ReactNode>>({})
-  const { account } = useAccount()
+  const router = useRouter()
 
-  const handleSelect = (fn: any) => {
-    if (!selectFnctions.includes(fn)) {
-      setSelectFunctions([...selectFnctions, fn])
-    }
+  const handleLoad = () => {
+    router.push(`/abiform/${contractAddress}`)
   }
-
-  const handleDelete = (fn: any) => {
-    setSelectFunctions(selectFnctions.filter((f: any) => f.name !== fn.name))
-  }
-
-  const handleCall = async (value: CallbackReturnType) => {
-    const contract = new Contract(abi, contractAddress, sepoliaProvider)
-    console.log('account', account)
-
-    console.log('contract', contract)
-    console.log('value', value)
-    try {
-      if (contract !== null && value?.stateMutability === 'view') {
-        const res = await contract?.call(value.functionName, value.inputs)
-        const res2 = '0x' + res?.toString(16)
-        setResponse({
-          ...response,
-          [value.functionName]: (
-            <div className="flex bg-slate-50">
-              <h2 className="w-1/5">reslut:</h2>
-              <div className="w-4/5">{res2}</div>
-            </div>
-          ),
-        })
-      } else if (contract !== null && value?.stateMutability === 'external') {
-        if (account) {
-          contract.connect(account)
-        } else {
-          console.log('account is null')
-          return
-        }
-        const res = await contract?.invoke(value.functionName, value.inputs)
-        const res2 = '0x' + res?.toString()
-        setResponse({
-          ...response,
-          [value.functionName]: (
-            <div className="flex bg-slate-50">
-              <h2 className="w-1/5">reslut:</h2>
-              <div className="w-4/5">{res2}</div>
-            </div>
-          ),
-        })
-      }
-    } catch (error: any) {
-      console.log('handleCall error', error)
-    }
-  }
-
   return (
-    <main className="flex gap-2">
-      <div className="border-2 border-t-0 border-slate p-4 shadow-md w-1/4">
-        <FunctionList
-          contractAddress={contractAddress}
-          onSelect={handleSelect}
-        />
-      </div>
-      <div className="w-1/2">
-        <div className="flex mt-6">
+    <div className="fixed inset-0 bg-muted/50 backdrop-blur-sm flex items-center justify-center">
+      <div className="rounded-lg shadow-lg p-8 w-full max-w-md bg-slate-300">
+        <div className="space-y-4">
+          <h2 className="text-2xl font-bold">Space ABI</h2>
+          <p className="text-muted-foreground">
+            Interact with contract on Starknet.
+          </p>
           <Input
             onChange={(e) => setContractAddress(e.target.value)}
             value={contractAddress}
             placeholder="enter ur contarct address"
             className="border-2 border-slate p-4"
           />
-        </div>
-        <div className="flex">
-          <div className="border-2 border-slate p-4 mt-6 shadow-md w-full">
-            <FunctionForm
-              selectFuctions={selectFnctions}
-              onDelete={handleDelete}
-              handleCallback={handleCall}
-              response={response}
-            />
-          </div>
+          <Button className="w-full" onClick={handleLoad}>
+            Relax
+          </Button>
         </div>
       </div>
-      <div className="border-2 border-slate p-4 mt-6 shadow-md w-1/4"></div>
-    </main>
+    </div>
   )
 }

@@ -2,25 +2,29 @@
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Abi, Contract } from 'starknet'
 import { ABIForm, CallbackReturnType } from 'starknet-abi-forms'
 import '@/style/AbiForm.css'
 import '@/style/FunctionForm.css'
 import { sepoliaProvider } from '@/utils/rpc-provider'
 import FunctionList from './testform'
+import useAbi from '@/hooks/useAbi'
 
 export default function Home() {
   //abi,合约地址
-  const [abi, setAbi] = useState<Abi>([])
+  // const [abi, setAbi] = useState<Abi>([])
+
   const [contractAddress, setContractAddress] = useState<string>('')
+  const {abi, updateAbi} =useAbi(contractAddress)
   const [responses, setResponses] = useState<Record<string, any>>({})
 
-  //根据地址获取abi并设置
-  async function getAbi(address: any) {
-    const { abi } = await sepoliaProvider.getClassAt(address)
-    setAbi(abi)
-  }
+  // //根据地址获取abi并设置
+  // async function getAbi(address: any) {
+  //   const { abi } = await sepoliaProvider.getClassAt(address)
+  //   setAbi(abi)
+  // }
+
 
   const handleCall = (value: CallbackReturnType) => {
     //获取到合约
@@ -67,7 +71,7 @@ export default function Home() {
     try {
       //根据合约地址获取abi
       if (contractAddress !== '') {
-        getAbi(contractAddress)
+        updateAbi(contractAddress)
       }
     } catch (e) {
       console.log(e)
