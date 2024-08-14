@@ -10,6 +10,7 @@ import {
   useInjectedConnectors,
   voyager,
 } from '@starknet-react/core'
+import { Toaster } from 'react-hot-toast'
 
 export function StarknetProvider({ children }: { children: ReactNode }) {
   const { connectors } = useInjectedConnectors({
@@ -23,12 +24,17 @@ export function StarknetProvider({ children }: { children: ReactNode }) {
 
   return (
     <StarknetConfig
-      chains={[mainnet,sepolia]}
+      chains={[mainnet, sepolia]}
       provider={publicProvider()}
       connectors={connectors}
       explorer={voyager}
     >
       {children}
+      <Toaster
+        toastOptions={{
+          className: 'toast',
+        }}
+      />
     </StarknetConfig>
   )
 }

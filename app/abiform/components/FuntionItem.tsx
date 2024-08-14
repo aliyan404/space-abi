@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { X } from 'lucide-react'
 import { useState } from 'react'
-import { CallbackReturnType } from '@/types/CallbackReturnType'
+import { CallbackReturnType } from '@/types'
 import {
   Card,
   CardContent,
