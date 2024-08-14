@@ -1,6 +1,5 @@
 'use client'
 
-import { Input } from '@/components/ui/input'
 import { useState } from 'react'
 import '@/style/AbiForm.css'
 import '@/style/FunctionForm.css'
@@ -11,25 +10,24 @@ import { CallbackReturnType } from '@/types/CallbackReturnType'
 import { Contract } from 'starknet'
 import { sepoliaProvider } from '@/utils/rpc-provider'
 import { useAccount } from '@starknet-react/core'
-import { useRouter } from 'next/router'
 import { useParams } from 'next/navigation'
 
 export default function ABIForm() {
   const params = useParams()
   const contractAddress = params.address
   const { abi } = useAbi(contractAddress as string)
-  const [selectFnctions, setSelectFunctions] = useState<any>([])
+  const [selectFunctions, setSelectFunctions] = useState<any[]>([])
   const [response, setResponse] = useState<Record<string, React.ReactNode>>({})
   const { account } = useAccount()
 
   const handleSelect = (fn: any) => {
-    if (!selectFnctions.includes(fn)) {
-      setSelectFunctions([...selectFnctions, fn])
+    if (!selectFunctions.find((f) => f.name === fn.name)) {
+      setSelectFunctions([...selectFunctions, fn])
     }
   }
 
   const handleDelete = (fn: any) => {
-    setSelectFunctions(selectFnctions.filter((f: any) => f.name !== fn.name))
+    setSelectFunctions(selectFunctions.filter((f: any) => f.name !== fn.name))
   }
 
   const handleCall = async (value: CallbackReturnType) => {
@@ -80,26 +78,20 @@ export default function ABIForm() {
   }
 
   return (
-    <main className="flex gap-2">
-      <div className="border-2 border-t-0 border-slate p-4 shadow-md w-1/4">
+    <main className="flex gap-2 min-h-screen">
+      <div className="w-1/4 sticky top-0 h-screen">
         <FunctionList
           contractAddress={contractAddress}
+          selectFunctions={selectFunctions}
           onSelect={handleSelect}
+          onDelete={handleDelete}
         />
       </div>
       <div className="w-1/2">
-        {/* <div className="flex mt-6">
-          <Input
-            onChange={(e) => setContractAddress(e.target.value)}
-            value={contractAddress}
-            placeholder="enter ur contarct address"
-            className="border-2 border-slate p-4"
-          />
-        </div> */}
         <div className="flex">
           <div className="border-2 border-slate p-4 mt-6 shadow-md w-full">
             <FunctionForm
-              selectFuctions={selectFnctions}
+              selectFuctions={selectFunctions}
               onDelete={handleDelete}
               handleCallback={handleCall}
               response={response}
@@ -107,7 +99,9 @@ export default function ABIForm() {
           </div>
         </div>
       </div>
-      <div className="border-2 border-slate p-4 mt-6 shadow-md w-1/4"></div>
+      <div className="border-2 border-slate p-4 mt-6 shadow-md w-1/4 h-1/4">
+        user Msg
+      </div>
     </main>
   )
 }

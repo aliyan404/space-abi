@@ -1,55 +1,101 @@
 'use client'
 
 import useFunction from '@/hooks/useFunction'
-import { Listbox, ListboxItem } from '@nextui-org/listbox'
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion'
+import { Button } from '@/components/ui/button'
+import { X } from 'lucide-react'
 
 export default function FunctionList({
   contractAddress,
+  selectFunctions,
   onSelect,
+  onDelete,
 }: {
   contractAddress: any
+  selectFunctions: any[]
   onSelect: any
+  onDelete: any
 }) {
   const functionsData = useFunction(contractAddress)
 
+  const handleAdd = (fn: any) => {
+    onSelect(fn)
+  }
+
+  const handleCancel = (e: React.MouseEvent, fn: any) => {
+    e.stopPropagation()
+    onDelete(fn)
+  }
+
   return (
-    <div className="flex gap-4 bg-slate-400 rounded-lg">
-      <div className="w-1/2 flex-col">
-        <h1 className="text-3xl font-bold text-white">Read</h1>
-        <Listbox color="primary" aria-label="funtion">
-          {functionsData
-            ?.filter((fn: any) => fn.state_mutability === 'view')
-            ?.map((fn: any) => {
-              return (
-                <ListboxItem
+    <div className="fixed left-0 top-16 bottom-0 w-[17rem] overflow-y-auto bg-slate-400 p-4">
+      <Accordion
+        type="multiple"
+        defaultValue={['read', 'write']}
+        className="w-full"
+      >
+        <AccordionItem value="read">
+          <AccordionTrigger className="text-2xl font-bold" style={{ textDecoration: 'none' }}>Read</AccordionTrigger>
+          <AccordionContent>
+            {functionsData
+              ?.filter((fn: any) => fn.state_mutability === 'view')
+              ?.map((fn: any) => (
+                <Button
                   key={fn.name}
-                  className="cursor-pointer border-spacing-1"
-                  onClick={() => onSelect(fn)}
+                  variant={
+                    selectFunctions.find((f) => f.name === fn.name)
+                      ? 'default'
+                      : 'outline'
+                  }
+                  className="w-full justify-start my-1 pr-8 relative"
+                  onClick={() => handleAdd(fn)}
                 >
                   {fn.name}
-                </ListboxItem>
-              )
-            })}
-        </Listbox>
-      </div>
-      <div className="w-1/2">
-        <h1 className="text-3xl font-bold text-white">Write</h1>
-        <Listbox color="primary" aria-label="funtion">
-          {functionsData
-            ?.filter((fn: any) => fn.state_mutability === 'external')
-            ?.map((fn: any,) => {
-              return (
-                <ListboxItem
+                  {selectFunctions.find((f) => f.name === fn.name) && (
+                    <X
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                      size={16}
+                      onClick={(e) => handleCancel(e, fn)}
+                    />
+                  )}
+                </Button>
+              ))}
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="write">
+          <AccordionTrigger className="text-2xl font-bold" style={{ textDecoration: 'none' }}>Write</AccordionTrigger>
+          <AccordionContent>
+            {functionsData
+              ?.filter((fn: any) => fn.state_mutability === 'external')
+              ?.map((fn: any) => (
+                <Button
                   key={fn.name}
-                  className="cursor-pointer border-spacing-1"
-                  onClick={() => onSelect(fn)}
+                  variant={
+                    selectFunctions.find((f) => f.name === fn.name)
+                      ? 'default'
+                      : 'outline'
+                  }
+                  className="w-full justify-start my-1 pr-8 relative"
+                  onClick={() => handleAdd(fn)}
                 >
                   {fn.name}
-                </ListboxItem>
-              )
-            })}
-        </Listbox>
-      </div>
+                  {selectFunctions.find((f) => f.name === fn.name) && (
+                    <X
+                      className="text-white absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                      size={16}
+                      onClick={(e) => handleCancel(e, fn)}
+                    />
+                  )}
+                </Button>
+              ))}
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </div>
   )
 }
