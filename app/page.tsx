@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import useAbi from '@/hooks/useAbi'
-import { useProvider } from '@/hooks/useProvider'
+import { useNetProvider } from '@/hooks/useProvider'
 import { mainnetProvider, sepoliaProvider } from '@/utils/rpc-provider'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -30,15 +30,15 @@ export default function Home() {
   const [contractAddress, setContractAddress] = useState<string>(initailState)
   const { isMounted } = useAbi(contractAddress)
   const router = useRouter()
-  const { network, setNetwork, setRpcNode } = useProvider()
+  const { network, setNetwork, setRpcProvider } = useNetProvider()
 
   const handleNetWork = (value: string) => {
     if (value === 'mainnet') {
       setNetwork('mainnet')
-      setRpcNode(mainnetProvider)
+      setRpcProvider(mainnetProvider)
     } else if (value === 'sepolia') {
       setNetwork('sepolia')
-      setRpcNode(sepoliaProvider)
+      setRpcProvider(sepoliaProvider)
     }
   }
 

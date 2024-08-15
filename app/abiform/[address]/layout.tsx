@@ -1,5 +1,4 @@
 import Header from '@/app/components/Header'
-import NetProvider from '@/hooks/useProvider'
 import React from 'react'
 
 export default function Layout({ children }: { children: React.ReactNode }) {

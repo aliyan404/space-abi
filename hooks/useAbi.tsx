@@ -3,12 +3,12 @@ import { sepoliaProvider } from '@/utils/rpc-provider'
 import { useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Abi } from 'starknet'
-import { useProvider } from './useProvider'
+import { useNetProvider } from './useProvider'
 
 export default function useAbi(contractAddress: string) {
   const [abi, setAbi] = useState<Abi>([])
   const [isMounted, setIsMounted] = useState(false)
-  const { rpcNode, setRpcNode } = useProvider()
+  const { rpcProvider } = useNetProvider()
 
   const updateAbi = async (rpcNode: any, contractAddress: string) => {
     try {
@@ -23,8 +23,10 @@ export default function useAbi(contractAddress: string) {
   }
 
   useEffect(() => {
-    updateAbi(rpcNode, contractAddress)
-  }, [rpcNode, contractAddress])
+    if (contractAddress && rpcProvider) {
+      updateAbi(rpcProvider, contractAddress)
+    }
+  }, [rpcProvider, contractAddress])
 
   return { abi, updateAbi, isMounted }
 }

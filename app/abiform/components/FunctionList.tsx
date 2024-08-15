@@ -50,7 +50,10 @@ export default function FunctionList({
             </AccordionTrigger>
             <AccordionContent>
               {functionsData
-                ?.filter((fn: any) => fn.state_mutability === 'view')
+                ?.filter(
+                  (fn: any) =>
+                    fn.state_mutability === 'view' && fn.inputs.length > 0
+                )
                 ?.map((fn: any) => (
                   <Button
                     key={fn.name}
@@ -83,7 +86,10 @@ export default function FunctionList({
             </AccordionTrigger>
             <AccordionContent>
               {functionsData
-                ?.filter((fn: any) => fn.state_mutability === 'external')
+                ?.filter(
+                  (fn: any) =>
+                    fn.state_mutability === 'external' && fn.inputs.length > 0
+                )
                 ?.map((fn: any) => (
                   <Button
                     key={fn.name}
