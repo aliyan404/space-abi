@@ -49,9 +49,7 @@ export default function ContractMsg({
             <div>
               {'0X' + data?.find((i: any) => i.name === 'name')?.result}
             </div>
-            <div className="ml-5 truncate max-w-full">
-              {'0X' + contractAddress}
-            </div>
+            <div className="ml-5 truncate max-w-full">{contractAddress}</div>
           </div>
           <div>
             <span className="font-bold">NetWork: </span>
