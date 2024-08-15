@@ -1,7 +1,7 @@
 'use client'
 import { useAccount, useConnect, useDisconnect } from '@starknet-react/core'
 import { useEffect, useMemo, useState } from 'react'
-import { Button } from './ui/button'
+import { Button } from '@/components/ui/button'
 
 function WalletConnected() {
   const { address } = useAccount()

@@ -9,19 +9,38 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import useAbi from '@/hooks/useAbi'
+import { useProvider } from '@/hooks/useProvider'
+import { mainnetProvider, sepoliaProvider } from '@/utils/rpc-provider'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
-import { abiSchema } from 'starknet-abi-forms'
 
 export default function Home() {
   const initailState =
     '0x031b79a7d00cae6fba1c6c2da59c00ea8764eeff1235b8115ed04229211c590e'
 
-  const [contractAddress, setContractAddress] = useState<string>('')
+  const [contractAddress, setContractAddress] = useState<string>(initailState)
   const { isMounted } = useAbi(contractAddress)
   const router = useRouter()
+  const { network, setNetwork, setRpcNode } = useProvider()
+
+  const handleNetWork = (value: string) => {
+    if (value === 'mainnet') {
+      setNetwork('mainnet')
+      setRpcNode(mainnetProvider)
+    } else if (value === 'sepolia') {
+      setNetwork('sepolia')
+      setRpcNode(sepoliaProvider)
+    }
+  }
 
   const handleLoad = () => {
     try {
@@ -45,11 +64,22 @@ export default function Home() {
           <p className="text-muted-foreground flex items-center justify-center">
             Interact with contract on Starknet.
           </p>
+          <div className="flex justify-center mt-6 mb-4">
+            <Select value={network} onValueChange={handleNetWork}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select network" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="mainnet">Mainnet</SelectItem>
+                <SelectItem value="sepolia">Sepolia</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
           <Input
             onChange={(e) => setContractAddress(e.target.value)}
             value={contractAddress}
             placeholder="enter ur contarct address"
-            className="border-2 border-slate p-4 mt-10"
+            className="border-2 border-slate p-4 mt-4"
             required
           />
         </CardContent>
