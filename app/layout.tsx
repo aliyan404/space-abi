@@ -21,9 +21,9 @@ export default function RootLayout({
       <body className={inter.className}>
         <Providers>
             {children}
-            <div className='fixed bottom-4 right-4 z-50'>
+            {/* <div className='fixed bottom-4 right-4 z-50'>
               <SwitchMode/>
-            </div>
+            </div> */}
         </Providers>
       </body>
     </html>

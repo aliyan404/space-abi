@@ -16,7 +16,7 @@ export default function SwitchMode() {
     <div className="flex items-center space-x-2">
       <Switch checked={isDark} onCheckedChange={handleChange} />
       <span className="text-sm font-bold">
-        {isDark ? 'Drak' : 'Light'}
+        {isDark ? 'Dark' : 'Light'}
       </span>
     </div>
   )

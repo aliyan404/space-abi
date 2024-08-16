@@ -1,8 +1,6 @@
 'use client'
 
 import { useState } from 'react'
-import '@/style/AbiForm.css'
-import '@/style/FunctionForm.css'
 import FunctionList from '@/app/abiform/components/FunctionList'
 import FunctionForm from '../components/FunctionForm'
 import useAbi from '@/hooks/useAbi'
@@ -41,9 +39,9 @@ export default function ABIForm() {
         setResponse({
           ...response,
           [value.functionName]: (
-            <div className="w-80 bg-gray-400 rounded-xl ml-5 pl-3">
-              <h2 className="font-bold">reslut:</h2>
-              <div className="w-4/5">{res2}</div>
+            <div className="bg-white shadow-md rounded-lg p-4 mt-4">
+              <h2 className="font-bold text-gray-700 mb-2">Result:</h2>
+              <div className="bg-gray-100 p-2 rounded">{res2}</div>
             </div>
           ),
         })
@@ -59,9 +57,9 @@ export default function ABIForm() {
         setResponse({
           ...response,
           [value.functionName]: (
-            <div className=" w-80 bg-gray-400 rounded-lg p-4 ml-5">
-              <h2 className="w-1/5">reslut:</h2>
-              <div className="w-4/5">{res2}</div>
+            <div className="bg-white shadow-md rounded-lg p-4 mt-4">
+              <h2 className="font-bold text-gray-700 mb-2">Result:</h2>
+              <div className="bg-gray-100 p-2 rounded">{res2}</div>
             </div>
           ),
         })
@@ -72,8 +70,8 @@ export default function ABIForm() {
   }
 
   return (
-    <main className="flex gap-2 min-h-screen bg-slate-100">
-      <div className="w-1/4 sticky top-0 h-screen">
+    <main className="flex gap-4 min-h-screen bg-gray-100">
+      <div className="w-1/4 sticky top-0 h-screen p-4">
         <FunctionList
           contractAddress={contractAddress}
           selectFunctions={selectFunctions}
@@ -89,7 +87,7 @@ export default function ABIForm() {
           response={response}
         />
       </div>
-      <div className=" p-4 mt-6 w-1/4">
+      <div className="w-1/4 p-4">
         <ContractMsg contractAddress={contractAddress as string} />
       </div>
     </main>

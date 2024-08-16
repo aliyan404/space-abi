@@ -22,6 +22,7 @@ import { mainnetProvider, sepoliaProvider } from '@/components/rpc-provider'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
+import '@/style/home.css'
 
 export default function Home() {
   const initailState =
@@ -53,20 +54,20 @@ export default function Home() {
   }
 
   return (
-    <div className="fixed inset-0 bg-muted/50 backdrop-blur-sm flex items-center justify-center bg-slate-100">
-      <Card className="rounded-lg shadow-lg p-8 w-full max-w-md bg-slate-300">
-        <CardHeader className="space-y-4">
-          <CardTitle className="text-4xl font-bold flex items-center justify-center">
+    <div className="fixed inset-0 bg-gradient-animate flex items-center justify-center">
+      <Card className="w-full max-w-md bg-white/80 backdrop-blur-sm shadow-xl rounded-2xl overflow-hidden">
+        <CardHeader className="p-6">
+          <CardTitle className="text-3xl font-bold text-center text-blue-600">
             Space ABI
           </CardTitle>
         </CardHeader>
-        <CardContent>
-          <p className="text-muted-foreground flex items-center justify-center">
-            Interact with contract on Starknet.
+        <CardContent className="p-6 space-y-6">
+          <p className="text-gray-600 text-center">
+            Interact with contracts on Starknet.
           </p>
-          <div className="flex justify-center mt-6 mb-4">
+          <div className="flex justify-center">
             <Select value={network} onValueChange={handleNetWork}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-48 bg-white border-gray-300 focus:ring-2 focus:ring-blue-500">
                 <SelectValue placeholder="Select network" />
               </SelectTrigger>
               <SelectContent>
@@ -78,17 +79,19 @@ export default function Home() {
           <Input
             onChange={(e) => setContractAddress(e.target.value)}
             value={contractAddress}
-            placeholder="enter ur contarct address"
-            className="border-2 border-slate p-4 mt-4"
+            placeholder="Enter contract address"
+            className="w-full bg-white border-gray-300 focus:ring-2 focus:ring-blue-500"
             required
           />
         </CardContent>
-        <CardFooter className="flex items-center justify-center">
-          {isMounted ? (
-            <Button onClick={handleLoad}>Load Contract</Button>
-          ) : (
-            <Button disabled>Load Contract</Button>
-          )}
+        <CardFooter className="p-6 flex justify-center">
+          <Button
+            onClick={handleLoad}
+            disabled={!isMounted}
+            className="w-48 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg"
+          >
+            {isMounted ? 'Load Contract' : 'Loading...'}
+          </Button>
         </CardFooter>
       </Card>
     </div>

@@ -15,6 +15,8 @@ export default function ConnectModel() {
   const [isLoading, setIsLoading] = useState(false)
   const {address} = useAccount()
 
+  const buttonClasses = "bg-gradient-to-r from-purple-400 via-blue-400 to-pink-400 text-white font-semibold py-2 px-4 rounded-full shadow-md hover:shadow-lg transition duration-300 ease-in-out transform hover:-translate-y-1"
+
   const handleConnect = async () => {
     try {
       setIsLoading(true)
@@ -36,9 +38,13 @@ export default function ConnectModel() {
   return (
     <>
       {isLoading ? (
-        <Button disabled>Connencting...</Button>
+        <Button disabled className={`${buttonClasses} opacity-50 cursor-not-allowed`}>
+          Connecting...
+        </Button>
       ) : (
-        <Button onClick={handleConnect}>Connect Wallet</Button>
+        <Button onClick={handleConnect} className={buttonClasses}>
+          Connect Wallet
+        </Button>
       )}
     </>
   )

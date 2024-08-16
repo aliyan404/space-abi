@@ -34,21 +34,18 @@ export default function FunctionList({
   }
 
   return (
-    <div className="fixed left-0 top-16 bottom-0 w-64 bg-slate-400 p-4 flex flex-col">
-      <ScrollArea className="h-full w-full realative pr-6">
+    <div className="fixed left-0 top-16 bottom-0 w-72 bg-white shadow-lg p-4 flex flex-col">
+      <ScrollArea className="h-full w-full pr-4">
         <Accordion
           type="multiple"
           defaultValue={['read', 'write']}
-          className="w-full"
+          className="w-full space-y-2"
         >
-          <AccordionItem value="read">
-            <AccordionTrigger
-              className="text-2xl font-bold"
-              style={{ textDecoration: 'none' }}
-            >
-              Read
+          <AccordionItem value="read" className="border-b">
+            <AccordionTrigger className="text-lg font-semibold px-2 py-3 text-blue-600 hover:text-blue-800">
+              Read Functions
             </AccordionTrigger>
-            <AccordionContent>
+            <AccordionContent className="p-2 space-y-1">
               {functionsData
                 ?.filter(
                   (fn: any) =>
@@ -57,18 +54,18 @@ export default function FunctionList({
                 ?.map((fn: any) => (
                   <Button
                     key={fn.name}
-                    variant={
+                    variant="ghost"
+                    className={`w-full justify-between text-left py-1 px-2 ${
                       selectFunctions.find((f) => f.name === fn.name)
-                        ? 'default'
-                        : 'outline'
-                    }
-                    className="w-full justify-start my-1 pr-8 relative"
+                        ? 'bg-blue-100 text-blue-700'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`}
                     onClick={() => handleAdd(fn)}
                   >
-                    {fn.name}
+                    <span className="truncate">{fn.name}</span>
                     {selectFunctions.find((f) => f.name === fn.name) && (
                       <X
-                        className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                        className="ml-2 flex-shrink-0 text-blue-500 hover:text-blue-700"
                         size={16}
                         onClick={(e) => handleCancel(e, fn)}
                       />
@@ -77,14 +74,11 @@ export default function FunctionList({
                 ))}
             </AccordionContent>
           </AccordionItem>
-          <AccordionItem value="write">
-            <AccordionTrigger
-              className="text-2xl font-bold"
-              style={{ textDecoration: 'none' }}
-            >
-              Write
+          <AccordionItem value="write" className="border-b">
+            <AccordionTrigger className="text-lg font-semibold px-2 py-3 text-purple-600 hover:text-purple-800">
+              Write Functions
             </AccordionTrigger>
-            <AccordionContent>
+            <AccordionContent className="p-2 space-y-1">
               {functionsData
                 ?.filter(
                   (fn: any) =>
@@ -93,18 +87,18 @@ export default function FunctionList({
                 ?.map((fn: any) => (
                   <Button
                     key={fn.name}
-                    variant={
+                    variant="ghost"
+                    className={`w-full justify-between text-left py-1 px-2 ${
                       selectFunctions.find((f) => f.name === fn.name)
-                        ? 'default'
-                        : 'outline'
-                    }
-                    className="w-full justify-start my-1 pr-8 relative"
+                        ? 'bg-purple-100 text-purple-700'
+                        : 'text-gray-700 hover:bg-gray-100'
+                    }`}
                     onClick={() => handleAdd(fn)}
                   >
-                    {fn.name}
+                    <span className="truncate">{fn.name}</span>
                     {selectFunctions.find((f) => f.name === fn.name) && (
                       <X
-                        className="text-white absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer"
+                        className="ml-2 flex-shrink-0 text-purple-500 hover:text-purple-700"
                         size={16}
                         onClick={(e) => handleCancel(e, fn)}
                       />
