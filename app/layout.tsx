@@ -1,6 +1,5 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { StarknetProvider } from '../components/starknet-provider'
 import '@/style/globals.css'
 import { Providers } from './providers'
 

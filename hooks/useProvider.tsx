@@ -1,6 +1,6 @@
 'use client'
 
-import { sepoliaProvider } from '@/utils/rpc-provider'
+import { sepoliaProvider } from '@/components/rpc-provider'
 import { createContext, ReactNode, useContext, useState } from 'react'
 import toast from 'react-hot-toast'
 

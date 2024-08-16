@@ -1,6 +1,5 @@
 'use client'
-import { sepoliaProvider } from '@/utils/rpc-provider'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Abi } from 'starknet'
 import { useNetProvider } from './useProvider'

@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import WalletBar from './WalletBar'
+import ConnectModel from '@/components/connect-model'
 
 export default function Header() {
   return (
@@ -11,7 +12,7 @@ export default function Header() {
           <Link href="/" prefetch={false}>Space ABI</Link>
         </div>
         <div className="flex items-center gap-4">
-          <WalletBar />
+          <ConnectModel/>
         </div>
       </header>
     </>

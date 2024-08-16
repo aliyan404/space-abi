@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/select'
 import useAbi from '@/hooks/useAbi'
 import { useNetProvider } from '@/hooks/useProvider'
-import { mainnetProvider, sepoliaProvider } from '@/utils/rpc-provider'
+import { mainnetProvider, sepoliaProvider } from '@/components/rpc-provider'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import toast from 'react-hot-toast'
