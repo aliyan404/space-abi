@@ -1,9 +1,11 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import React, { useState, useEffect } from 'react'
 import useFunction from '@/hooks/useFunction'
 import useInteract from '@/hooks/useInteract'
 import { useNetProvider } from '@/hooks/useProvider'
 import useSWR from 'swr'
 import { Loader2 } from 'lucide-react'
+import LoadingBar from './LoadingBar'
 
 export default function ContractMsg({
   contractAddress,
@@ -51,30 +53,22 @@ export default function ContractMsg({
   const isDataReady =
     data && data.every((item: any) => item.result !== undefined)
 
+  const [progress, setProgress] = useState(0)
+
+  useEffect(() => {
+    if (!isContractReady) {
+      setProgress(25)
+    } else if (isLoading) {
+      setProgress(50)
+    } else if (!isDataReady) {
+      setProgress(75)
+    } else {
+      setProgress(100)
+    }
+  }, [isContractReady, isLoading, isDataReady])
+
   if (!isContractReady || isLoading || !isDataReady) {
-    return (
-      <div className="flex flex-col justify-center items-center h-64 bg-gray-50 rounded-lg shadow-inner p-6">
-        <Loader2 className="h-8 w-8 text-blue-500 animate-spin mb-4" />
-        <p className="text-lg font-semibold text-gray-700 mb-2">
-          Loading Contract Data
-        </p>
-        <p className="text-sm text-gray-500 mb-4">
-          {!isContractReady
-            ? 'Initializing contract...'
-            : isLoading
-            ? 'Fetching data...'
-            : !isDataReady
-            ? 'Processing results...'
-            : 'Almost there...'}
-        </p>
-        <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
-          <div
-            className="bg-blue-600 h-2.5 rounded-full"
-            style={{ width: '45%' }}
-          ></div>
-        </div>
-      </div>
-    )
+    return <LoadingBar progress={progress} message="Loading Contract data..." />
   }
 
   return (
