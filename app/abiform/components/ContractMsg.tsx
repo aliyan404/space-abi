@@ -15,7 +15,7 @@ export default function ContractMsg({
   const { network } = useNetProvider()
   const { interact, isContractReady } = useInteract(contractAddress)
 
-  const { data, isLoading } = useSWR(
+  const { data, isLoading, mutate } = useSWR(
     isContractReady ? ['/contractMsg', functions] : null,
     async () => {
       const showFunctions =
@@ -66,6 +66,30 @@ export default function ContractMsg({
     }
   }, [isContractReady, isLoading, isDataReady])
 
+  const [refreshingItems, setRefreshingItems] = useState<string[]>([])
+
+  const refreshItem = async (itemName: string) => {
+    setRefreshingItems((prev) => [...prev, itemName])
+    const fn = functions?.find((f: any) => f.name === itemName)
+    if (fn) {
+      try {
+        const res = await interact({
+          functionName: fn.name,
+          stateMutability: fn.state_mutability,
+          inputs: fn.inputs,
+        })
+        const updatedData = data?.map((item: any) =>
+          item.name === itemName ? { ...item, result: res } : item
+        )
+        mutate(updatedData, false)
+      } catch (error) {
+        console.error(`Error refreshing ${itemName}:`, error)
+      } finally {
+        setRefreshingItems((prev) => prev.filter((item) => item !== itemName))
+      }
+    }
+  }
+
   if (!isContractReady || isLoading || !isDataReady) {
     return <LoadingBar progress={progress} message="Loading Contract data..." />
   }
@@ -74,7 +98,7 @@ export default function ContractMsg({
     <div className="space-y-6 max-w-3xl mx-auto">
       <Card className="overflow-hidden shadow-lg">
         <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-600">
-          <CardTitle className="text-xl font-bold text-white">
+          <CardTitle className="text-xl font-bold text-white tracking-wide">
             Contract Overview
           </CardTitle>
         </CardHeader>
@@ -100,7 +124,7 @@ export default function ContractMsg({
 
       <Card className="overflow-hidden shadow-lg">
         <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-600">
-          <CardTitle className="text-xl font-bold text-white">
+          <CardTitle className="text-xl font-bold text-white tracking-wide">
             Contract Data
           </CardTitle>
         </CardHeader>
@@ -112,12 +136,37 @@ export default function ContractMsg({
               {data?.map((item: any) => (
                 <div
                   key={item.name}
-                  className="bg-white p-4 rounded-lg shadow-sm border border-gray-200"
+                  className={`bg-white p-4 rounded-lg shadow-sm border border-gray-200 relative ${
+                    refreshingItems.includes(item.name) ? 'animate-pulse' : ''
+                  }`}
                 >
                   <div className="flex justify-between items-center mb-2">
                     <h3 className="text-lg font-semibold text-gray-800">
                       {item.name}
                     </h3>
+                    <button
+                      onClick={() => refreshItem(item.name)}
+                      className={`absolute top-2 right-2 p-1 text-gray-500 hover:text-gray-700 transition-transform duration-300 ${
+                        refreshingItems.includes(item.name)
+                          ? 'animate-spin'
+                          : ''
+                      }`}
+                      disabled={refreshingItems.includes(item.name)}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M23 4v6h-6"></path>
+                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                      </svg>
+                    </button>
                   </div>
                   <div className="text-sm text-gray-600 break-all">
                     {JSON.stringify(item.result)}
