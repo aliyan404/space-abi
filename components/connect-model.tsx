@@ -1,5 +1,5 @@
 'use client'
-import { useAccount, useConnect } from '@starknet-react/core'
+import { useAccount, useConnect, useNetwork } from '@starknet-react/core'
 import { useStarknetkitConnectModal } from 'starknetkit'
 import { Button } from './ui/button'
 import { useState } from 'react'
@@ -7,10 +7,13 @@ import toast from 'react-hot-toast'
 import { DisConnectModel } from './disconnect-model'
 import { useNetProvider } from '@/hooks/useNetProvider'
 import { mainnet, sepolia } from '@starknet-react/chains'
+import { useParams } from 'next/navigation'
 
 export default function ConnectModel() {
   const { connect, connectors } = useConnect()
-  const { network } = useNetProvider()
+  const param = useParams()
+  const network = param?.network as string
+  const walletNetId = useNetwork().chain.id
   const { address } = useAccount()
   const { starknetkitConnectModal } = useStarknetkitConnectModal({
     connectors: connectors as any,
@@ -28,12 +31,14 @@ export default function ConnectModel() {
       const { connector } = await starknetkitConnectModal()
 
       const connectChainId = await connector?.chainId()
+      console.log('walletNetId', walletNetId)
+      console.log('should be', network, chains[network].id)
 
-      if (connectChainId !== chains[network].id) {
-        if (connectChainId === chains['mainnet'].id) {
+      if (walletNetId !== chains[network].id) {
+        if (walletNetId === chains['mainnet'].id) {
           toast.error('Please switch to Sepolia Network')
           return
-        } else if (connectChainId === chains['sepolia'].id) {
+        } else if (walletNetId === chains['sepolia'].id) {
           toast.error('Please switch to Mainnet Network')
           return
         }

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import FunctionList from '@/app/abiform/components/FunctionList'
+import FunctionList from '@/app/[network]/abiform/components/FunctionList'
 import FunctionForm from '../components/FunctionForm'
 import useAbi from '@/hooks/useAbi'
 import { CallbackReturnType } from '@/types'
