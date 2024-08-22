@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Abi } from 'starknet'
-import { useNetProvider } from './useProvider'
+import { useNetProvider } from './useNetProvider'
 
 export default function useAbi(contractAddress: string) {
   const [abi, setAbi] = useState<Abi>([])

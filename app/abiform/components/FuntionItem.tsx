@@ -13,6 +13,12 @@ import {
   CardTitle,
 } from '@/components/ui/card'
 import { useAccount } from '@starknet-react/core'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
+import { TooltipProvider } from '@radix-ui/react-tooltip'
 
 export default function FunctionItem({
   fnMsg,
@@ -32,6 +38,15 @@ export default function FunctionItem({
     setInputValues({
       ...inputValues,
       [e.target.name]: e.target.value,
+    })
+  }
+
+  const handleAddDecimals = (inputName: string) => {
+    const currentValue = inputValues[inputName] || ''
+    const newValue = currentValue ? `${currentValue}${'0'.repeat(18)}` : ''
+    setInputValues({
+      ...inputValues,
+      [inputName]: newValue,
     })
   }
 
@@ -77,12 +92,35 @@ export default function FunctionItem({
                 <span className="font-medium">{input.name}:</span>
                 <span className="text-indigo-500">({input.type})</span>
               </div>
-              <Input
-                placeholder={input.name}
-                name={input.name}
-                onChange={handleChange}
-                className="w-full border-indigo-200 focus:border-indigo-400 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              />
+              <div className="relative">
+                <Input
+                  placeholder={input.name}
+                  name={input.name}
+                  value={inputValues[input.name] || ''}
+                  onChange={handleChange}
+                  className="w-full border-indigo-200 focus:border-indigo-400 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 pr-10"
+                />
+                {input.type === 'core::integer::u256' && (
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Button
+                          type="button"
+                          onClick={() => handleAddDecimals(input.name)}
+                          className="absolute right-2 top-1/2 transform -translate-y-1/2 p-1 text-sm text-indigo-600 hover:text-indigo-800 bg-transparent hover:bg-transparent border-none"
+                        >
+                          *
+                        </Button>
+                      </TooltipTrigger>
+                      <TooltipContent side="top" align="center">
+                        <p className="text-sm text-gray-500">
+                          Multiply by 1e18
+                        </p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                )}
+              </div>
             </div>
           ))}
         </CardContent>

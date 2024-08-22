@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import useAbi from '@/hooks/useAbi'
-import { useNetProvider } from '@/hooks/useProvider'
+import { useNetProvider } from '@/hooks/useNetProvider'
 import { mainnetProvider, sepoliaProvider } from '@/components/rpc-provider'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'

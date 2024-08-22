@@ -2,7 +2,7 @@
 
 import { Contract } from 'starknet'
 import useAbi from './useAbi'
-import { useNetProvider } from './useProvider'
+import { useNetProvider } from './useNetProvider'
 import { useAccount } from '@starknet-react/core'
 import { CallbackReturnType } from '@/types'
 import { useEffect, useState } from 'react'

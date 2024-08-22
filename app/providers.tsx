@@ -1,6 +1,6 @@
 import { StarknetProvider } from '@/components/starknet-provider'
 import { ThemeProvider } from '@/components/theme-provider'
-import NetProvider from '@/hooks/useProvider'
+import NetProvider from '@/hooks/useNetProvider'
 import { ReactNode } from 'react'
 import { Toaster } from 'react-hot-toast'
 

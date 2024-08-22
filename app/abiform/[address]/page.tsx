@@ -9,7 +9,7 @@ import { Contract } from 'starknet'
 import { useAccount } from '@starknet-react/core'
 import { useParams } from 'next/navigation'
 import ContractMsg from '../components/ContractMsg'
-import { useNetProvider } from '@/hooks/useProvider'
+import { useNetProvider } from '@/hooks/useNetProvider'
 
 export default function ABIForm() {
   const params = useParams()

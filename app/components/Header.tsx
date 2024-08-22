@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import WalletBar from './WalletBar'
 import ConnectModel from '@/components/connect-model'
 
 export default function Header() {

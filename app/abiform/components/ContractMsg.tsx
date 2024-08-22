@@ -2,9 +2,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import React, { useState, useEffect } from 'react'
 import useFunction from '@/hooks/useFunction'
 import useInteract from '@/hooks/useInteract'
-import { useNetProvider } from '@/hooks/useProvider'
+import { useNetProvider } from '@/hooks/useNetProvider'
 import useSWR from 'swr'
-import { Loader2 } from 'lucide-react'
 import LoadingBar from './LoadingBar'
 
 export default function ContractMsg({
