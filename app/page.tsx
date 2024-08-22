@@ -56,8 +56,8 @@ export default function Home() {
   return (
     <div className="fixed inset-0 bg-gradient-animate flex items-center justify-center">
       <Card className="w-full max-w-md bg-white/80 backdrop-blur-sm shadow-xl rounded-2xl overflow-hidden">
-        <CardHeader className="p-6">
-          <CardTitle className="text-3xl font-bold text-center text-blue-600">
+        <CardHeader className="p-6 pb-0">
+          <CardTitle className="text-4xl font-bold text-center text-blue-600">
             Space ABI
           </CardTitle>
         </CardHeader>
@@ -88,7 +88,7 @@ export default function Home() {
           <Button
             onClick={handleLoad}
             disabled={!isMounted}
-            className="w-48 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg"
+            className="w-48 h-14 text-lg bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg"
           >
             {isMounted ? 'Load Contract' : 'Loading...'}
           </Button>

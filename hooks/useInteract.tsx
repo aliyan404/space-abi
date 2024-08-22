@@ -12,38 +12,48 @@ export default function useInteract(contractAddress: string) {
   const { rpcProvider } = useNetProvider()
   const { account } = useAccount()
   const [contract, setContract] = useState<Contract | null>(null)
+  const [isContractReady, setIsContractReady] = useState(false)
 
   useEffect(() => {
     if (abi && contractAddress && rpcProvider && isMounted) {
       try {
         const newContract = new Contract(abi, contractAddress, rpcProvider)
         setContract(newContract)
+        setIsContractReady(true)
         console.log('Contract initialized successfully')
       } catch (error) {
         console.error('Error initializing contract:', error)
+        setIsContractReady(false)
       }
+    } else {
+      setIsContractReady(false)
     }
   }, [abi, contractAddress, rpcProvider, isMounted])
 
   const interact = async (value: CallbackReturnType) => {
+    if (!isContractReady || !contract) {
+      throw new Error('Contract is not ready')
+    }
+
     try {
-      if (contract !== null && value?.stateMutability === 'view') {
-        const res = await contract?.call(value.functionName, value.inputs)
+      if (value?.stateMutability === 'view') {
+        const res = await contract.call(value.functionName, value.inputs)
         console.log('View function result:', res)
         return res?.toString()
-      } else if (contract !== null && value?.stateMutability === 'external') {
-        if (account) {
-          contract.connect(account)
-        } else {
-          console.log('account is null')
-          return
+      } else if (value?.stateMutability === 'external') {
+        if (!account) {
+          throw new Error('Account is not connected')
         }
-        const res = await contract?.invoke(value.functionName, value.inputs)
+        contract.connect(account)
+        const res = await contract.invoke(value.functionName, value.inputs)
         return res?.toString()
       }
+      throw new Error('Unsupported state mutability')
     } catch (error: any) {
-      console.log('handleCall error', error)
+      console.error('handleCall error', error)
+      throw error
     }
   }
-  return { interact, abi }
+
+  return { interact, abi, isContractReady }
 }

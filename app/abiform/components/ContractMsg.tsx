@@ -3,6 +3,7 @@ import useFunction from '@/hooks/useFunction'
 import useInteract from '@/hooks/useInteract'
 import { useNetProvider } from '@/hooks/useProvider'
 import useSWR from 'swr'
+import { Loader2 } from 'lucide-react'
 
 export default function ContractMsg({
   contractAddress,
@@ -11,39 +12,78 @@ export default function ContractMsg({
 }) {
   const functions = useFunction(contractAddress)
   const { network } = useNetProvider()
-  const { interact } = useInteract(contractAddress)
+  const { interact, isContractReady } = useInteract(contractAddress)
 
-  const { data, isLoading, error } = useSWR(
-    ['/contractMsg', functions],
-    async ([_, functions]) => {
-      const showFuctions = functions?.filter(
-        (fn: any) => fn.state_mutability === 'view' && fn.inputs.length === 0
-      )
+  const { data, isLoading } = useSWR(
+    isContractReady ? ['/contractMsg', functions] : null,
+    async () => {
+      const showFunctions =
+        functions?.filter(
+          (fn: any) => fn.state_mutability === 'view' && fn.inputs.length === 0
+        ) || []
+      console.log('showFunctions', showFunctions)
 
       const result = await Promise.all(
-        showFuctions?.map(async (fn: any) => {
-          const res = await interact({
-            functionName: fn.name,
-            stateMutability: fn.state_mutability,
-            inputs: fn.inputs,
-          })
-          console.log('res', res)
-          return { name: fn.name, result: res?.toString() }
+        showFunctions.map(async (fn: any) => {
+          try {
+            const res = await interact({
+              functionName: fn.name,
+              stateMutability: fn.state_mutability,
+              inputs: fn.inputs,
+            })
+            console.log('res', res)
+            return { name: fn.name, result: res }
+          } catch (error) {
+            console.error(`Error in function ${fn.name}:`, error)
+            return { name: fn.name, result: 'Error' }
+          }
         })
       )
-      return result
-    }
+      return result.filter(
+        (item) => item.result !== undefined && item.result !== 'Error'
+      )
+    },
+    { revalidateOnFocus: false, shouldRetryOnError: false }
   )
 
   console.log('data', data)
 
-  if (isLoading) return <div className="flex justify-center items-center h-64">Loading...</div>
+  const isDataReady =
+    data && data.every((item: any) => item.result !== undefined)
+
+  if (!isContractReady || isLoading || !isDataReady) {
+    return (
+      <div className="flex flex-col justify-center items-center h-64 bg-gray-50 rounded-lg shadow-inner p-6">
+        <Loader2 className="h-8 w-8 text-blue-500 animate-spin mb-4" />
+        <p className="text-lg font-semibold text-gray-700 mb-2">
+          Loading Contract Data
+        </p>
+        <p className="text-sm text-gray-500 mb-4">
+          {!isContractReady
+            ? 'Initializing contract...'
+            : isLoading
+            ? 'Fetching data...'
+            : !isDataReady
+            ? 'Processing results...'
+            : 'Almost there...'}
+        </p>
+        <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+          <div
+            className="bg-blue-600 h-2.5 rounded-full"
+            style={{ width: '45%' }}
+          ></div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6 max-w-3xl mx-auto">
       <Card className="overflow-hidden shadow-lg">
         <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-600">
-          <CardTitle className="text-xl font-bold text-white">Contract Overview</CardTitle>
+          <CardTitle className="text-xl font-bold text-white">
+            Contract Overview
+          </CardTitle>
         </CardHeader>
         <CardContent className="p-6">
           <div className="flex flex-col space-y-4">
@@ -67,7 +107,9 @@ export default function ContractMsg({
 
       <Card className="overflow-hidden shadow-lg">
         <CardHeader className="bg-gradient-to-r from-blue-500 to-purple-600">
-          <CardTitle className="text-xl font-bold text-white">Contract Data</CardTitle>
+          <CardTitle className="text-xl font-bold text-white">
+            Contract Data
+          </CardTitle>
         </CardHeader>
         <CardContent className="p-6">
           {isLoading ? (
@@ -75,9 +117,14 @@ export default function ContractMsg({
           ) : (
             <div className="space-y-4">
               {data?.map((item: any) => (
-                <div key={item.name} className="bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                <div
+                  key={item.name}
+                  className="bg-white p-4 rounded-lg shadow-sm border border-gray-200"
+                >
                   <div className="flex justify-between items-center mb-2">
-                    <h3 className="text-lg font-semibold text-gray-800">{item.name}</h3>
+                    <h3 className="text-lg font-semibold text-gray-800">
+                      {item.name}
+                    </h3>
                   </div>
                   <div className="text-sm text-gray-600 break-all">
                     {JSON.stringify(item.result)}
