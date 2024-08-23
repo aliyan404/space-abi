@@ -34,7 +34,7 @@ export default function FunctionList({
   }
 
   return (
-    <div className="fixed left-0 top-16 bottom-0 w-72 bg-white shadow-lg p-4 flex flex-col">
+    <div className="fixed left-0 top-3 bottom-0 w-full bg-white shadow-lg p-4 flex flex-col overflow-hidden">
       <ScrollArea className="h-full w-full pr-4">
         <Accordion
           type="multiple"
@@ -55,7 +55,7 @@ export default function FunctionList({
                   <Button
                     key={fn.name}
                     variant="ghost"
-                    className={`w-full justify-between text-left py-1 px-2 ${
+                    className={`w-full justify-between text-left py-1 px-2 whitespace-nowrap overflow-hidden ${
                       selectFunctions.find((f) => f.name === fn.name)
                         ? 'bg-blue-100 text-blue-700'
                         : 'text-gray-700 hover:bg-gray-100'
@@ -88,7 +88,7 @@ export default function FunctionList({
                   <Button
                     key={fn.name}
                     variant="ghost"
-                    className={`w-full justify-between text-left py-1 px-2 ${
+                    className={`w-full justify-between text-left py-1 px-2 whitespace-nowrap overflow-hidden ${
                       selectFunctions.find((f) => f.name === fn.name)
                         ? 'bg-purple-100 text-purple-700'
                         : 'text-gray-700 hover:bg-gray-100'
