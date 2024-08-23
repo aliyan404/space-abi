@@ -98,6 +98,12 @@ export default function ContractMsg({
     }
   }
 
+  const contractName = interactSwitchRes(
+    'core::felt252',
+    data?.find((i: ContarctMsgReturnType) => i.functionName === 'name')?.result
+      .value || ''
+  )
+
   if (!isContractReady || isLoading || !isDataReady) {
     return <LoadingBar progress={progress} message="Loading Contract data..." />
   }
@@ -114,12 +120,7 @@ export default function ContractMsg({
           <div className="flex flex-col space-y-4">
             <div className="flex items-center space-x-4">
               <span className="text-lg font-semibold text-gray-700">
-                {interactSwitchRes(
-                  'core::felt252',
-                  data?.find(
-                    (i: ContarctMsgReturnType) => i.functionName === 'name'
-                  )?.result.value!
-                )}
+                {contractName}
               </span>
               <div className="flex items-center space-x-2 flex-1">
                 <span className="text-sm text-gray-500 font-mono">
