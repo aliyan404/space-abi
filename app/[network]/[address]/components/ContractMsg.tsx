@@ -5,6 +5,8 @@ import useInteract from '@/hooks/useInteract'
 import { useNetProvider } from '@/hooks/useNetProvider'
 import useSWR from 'swr'
 import LoadingBar from './LoadingBar'
+import { shortenAddress } from '@/utils'
+import CopyBtn from '@/components/copy-btn'
 
 export default function ContractMsg({
   contractAddress,
@@ -108,9 +110,12 @@ export default function ContractMsg({
               <span className="text-lg font-semibold text-gray-700">
                 {'0X' + data?.find((i: any) => i.name === 'name')?.result}
               </span>
-              <span className="text-sm text-gray-500 truncate flex-1">
-                {contractAddress}
-              </span>
+              <div className="flex items-center space-x-2 flex-1">
+                <span className="text-sm text-gray-500 font-mono">
+                  {shortenAddress(contractAddress)}
+                </span>
+                <CopyBtn value={contractAddress} />
+              </div>
             </div>
             <div className="flex items-center space-x-2">
               <span className="font-medium text-gray-600">Network:</span>
@@ -169,6 +174,7 @@ export default function ContractMsg({
                     </button>
                   </div>
                   <div className="text-sm text-gray-600 break-all">
+                    {}
                     {JSON.stringify(item.result)}
                   </div>
                 </div>

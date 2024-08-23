@@ -1,22 +1,17 @@
 'use client'
 
 import { useState } from 'react'
-import FunctionList from '@/app/[network]/abiform/components/FunctionList'
-import FunctionForm from '../components/FunctionForm'
-import useAbi from '@/hooks/useAbi'
+import FunctionList from '@/app/[network]/[address]/components/FunctionList'
+import FunctionForm from './components/FunctionForm'
 import { CallbackReturnType } from '@/types'
-import { Contract } from 'starknet'
-import { useAccount } from '@starknet-react/core'
 import { useParams } from 'next/navigation'
-import ContractMsg from '../components/ContractMsg'
-import { useNetProvider } from '@/hooks/useNetProvider'
+import ContractMsg from './components/ContractMsg'
+import useInteract from '@/hooks/useInteract'
 
 export default function ABIForm() {
   const params = useParams()
-  const { account } = useAccount()
   const contractAddress = params.address
-  const { abi } = useAbi(contractAddress as string)
-  const { rpcProvider } = useNetProvider()
+  const { interact, isContractReady } = useInteract(contractAddress as string)
   const [selectFunctions, setSelectFunctions] = useState<any[]>([])
   const [response, setResponse] = useState<Record<string, React.ReactNode>>({})
 
@@ -31,28 +26,9 @@ export default function ABIForm() {
   }
 
   const handleCall = async (value: CallbackReturnType) => {
-    const contract = new Contract(abi, contractAddress as string, rpcProvider)
     try {
-      if (contract !== null && value?.stateMutability === 'view') {
-        const res = await contract?.call(value.functionName, value.inputs)
-        const res2 = '0x' + res?.toString(16)
-        setResponse({
-          ...response,
-          [value.functionName]: (
-            <div className="bg-white shadow-md rounded-lg p-4 mt-4">
-              <h2 className="font-bold text-gray-700 mb-2">Result:</h2>
-              <div className="bg-gray-100 p-2 rounded">{res2}</div>
-            </div>
-          ),
-        })
-      } else if (contract !== null && value?.stateMutability === 'external') {
-        if (account) {
-          contract.connect(account)
-        } else {
-          console.log('account is null')
-          return
-        }
-        const res = await contract?.invoke(value.functionName, value.inputs)
+      if (isContractReady) {
+        const res = await interact(value)
         const res2 = '0x' + res?.toString()
         setResponse({
           ...response,

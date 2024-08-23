@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Space ABI',
-  description: 'A satrknrt abi tool',
+  description: 'a satrknet ABI tool',
 }
 
 export default function RootLayout({
@@ -20,8 +20,8 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Providers>
-            {children}
-            {/* <div className='fixed bottom-4 right-4 z-50'>
+          {children}
+          {/* <div className='fixed bottom-4 right-4 z-50'>
               <SwitchMode/>
             </div> */}
         </Providers>

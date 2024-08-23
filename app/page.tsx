@@ -45,7 +45,7 @@ export default function Home() {
 
   const handleLoad = () => {
     try {
-      router.push(`/${network}/abiform/${contractAddress}`)
+      router.push(`/${network}/${contractAddress}`)
       toast.success('ABI loaded')
     } catch (e) {
       console.error(e)

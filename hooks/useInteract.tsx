@@ -3,14 +3,18 @@
 import { Contract } from 'starknet'
 import useAbi from './useAbi'
 import { useNetProvider } from './useNetProvider'
-import { useAccount } from '@starknet-react/core'
+import { useAccount, useNetwork } from '@starknet-react/core'
 import { CallbackReturnType } from '@/types'
 import { useEffect, useState } from 'react'
+import toast from 'react-hot-toast'
+import { mainnet, sepolia } from '@starknet-react/chains'
 
 export default function useInteract(contractAddress: string) {
   const { abi, isMounted } = useAbi(contractAddress)
-  const { rpcProvider } = useNetProvider()
+  const { rpcProvider, network } = useNetProvider()
   const { account } = useAccount()
+  const connectNetwork = useNetwork().chain.id
+  const chains = { mainnet: mainnet, sepolia: sepolia } as any
   const [contract, setContract] = useState<Contract | null>(null)
   const [isContractReady, setIsContractReady] = useState(false)
 
@@ -42,8 +46,20 @@ export default function useInteract(contractAddress: string) {
         return res?.toString()
       } else if (value?.stateMutability === 'external') {
         if (!account) {
-          throw new Error('Account is not connected')
+          toast.error('Please connect your wallet')
+          return
         }
+
+        if (chains[network]?.id !== connectNetwork) {
+          if (connectNetwork === chains['sepolia']?.id) {
+            toast.error('Please switch to Mainnet network')
+            return
+          } else if (connectNetwork === chains['mainnet']?.id) {
+            toast.error('Please switch to Sepolia network')
+            return
+          }
+        }
+
         contract.connect(account)
         const res = await contract.invoke(value.functionName, value.inputs)
         return res?.toString()
