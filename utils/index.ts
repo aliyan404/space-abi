@@ -8,7 +8,7 @@ export const shortenAddress = (address?: string) => {
   )}`
 }
 
-export const interactSwitchRes = (value: string, type: string) => {
+export const interactSwitchRes = (type: string, value: string) => {
   if (type === 'core::felt252') {
     return shortString.decodeShortString(value)
   }

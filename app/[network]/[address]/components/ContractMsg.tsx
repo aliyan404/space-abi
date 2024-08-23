@@ -5,8 +5,9 @@ import useInteract from '@/hooks/useInteract'
 import { useNetProvider } from '@/hooks/useNetProvider'
 import useSWR from 'swr'
 import LoadingBar from './LoadingBar'
-import { shortenAddress } from '@/utils'
+import { interactSwitchRes, shortenAddress } from '@/utils'
 import CopyBtn from '@/components/copy-btn'
+import { ContarctMsgReturnType } from '@/types'
 
 export default function ContractMsg({
   contractAddress,
@@ -19,7 +20,7 @@ export default function ContractMsg({
 
   const { data, isLoading, mutate } = useSWR(
     isContractReady ? ['/contractMsg', functions] : null,
-    async () => {
+    async (): Promise<ContarctMsgReturnType[]> => {
       const showFunctions =
         functions?.filter(
           (fn: any) => fn.state_mutability === 'view' && fn.inputs.length === 0
@@ -36,10 +37,13 @@ export default function ContractMsg({
               outputs: fn.outputs,
             })
             console.log('res', res)
-            return { name: fn.name, result: res }
+            return {
+              functionName: fn.name,
+              result: res,
+            } as ContarctMsgReturnType
           } catch (error) {
             console.error(`Error in function ${fn.name}:`, error)
-            return { name: fn.name, result: 'Error' }
+            return
           }
         })
       )
@@ -82,8 +86,8 @@ export default function ContractMsg({
           inputs: fn.inputs,
           outputs: fn.outputs,
         })
-        const updatedData = data?.map((item: any) =>
-          item.name === itemName ? { ...item, result: res } : item
+        const updatedData = data?.map((item: ContarctMsgReturnType) =>
+          item.functionName === itemName ? { ...item, result: res } : item
         )
         mutate(updatedData, false)
       } catch (error) {
@@ -110,7 +114,12 @@ export default function ContractMsg({
           <div className="flex flex-col space-y-4">
             <div className="flex items-center space-x-4">
               <span className="text-lg font-semibold text-gray-700">
-                {data?.find((i: any) => i.name === 'name')?.result}
+                {interactSwitchRes(
+                  'core::felt252',
+                  data?.find(
+                    (i: ContarctMsgReturnType) => i.functionName === 'name'
+                  )?.result.value!
+                )}
               </span>
               <div className="flex items-center space-x-2 flex-1">
                 <span className="text-sm text-gray-500 font-mono">
@@ -140,25 +149,27 @@ export default function ContractMsg({
             <div className="text-center text-gray-500">Loading...</div>
           ) : (
             <div className="space-y-4">
-              {data?.map((item: any) => (
+              {data?.map((item: ContarctMsgReturnType) => (
                 <div
-                  key={item.name}
+                  key={item.functionName}
                   className={`bg-white p-4 rounded-lg shadow-sm border border-gray-200 relative ${
-                    refreshingItems.includes(item.name) ? 'animate-pulse' : ''
+                    refreshingItems.includes(item.functionName)
+                      ? 'animate-pulse'
+                      : ''
                   }`}
                 >
                   <div className="flex justify-between items-center mb-2">
                     <h3 className="text-lg font-semibold text-gray-800">
-                      {item.name}
+                      {item.functionName}
                     </h3>
                     <button
-                      onClick={() => refreshItem(item.name)}
+                      onClick={() => refreshItem(item.functionName)}
                       className={`absolute top-2 right-2 p-1 text-gray-500 hover:text-gray-700 transition-transform duration-300 ${
-                        refreshingItems.includes(item.name)
+                        refreshingItems.includes(item.functionName)
                           ? 'animate-spin'
                           : ''
                       }`}
-                      disabled={refreshingItems.includes(item.name)}
+                      disabled={refreshingItems.includes(item.functionName)}
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -176,7 +187,13 @@ export default function ContractMsg({
                     </button>
                   </div>
                   <div className="text-sm text-gray-600 break-all">
-                    {JSON.stringify(item.result)}
+                    {JSON.stringify(
+                      interactSwitchRes(item?.result?.type, item?.result?.value)
+                    )}
+                    {item?.result?.type ===
+                    'core::starknet::contract_address::ContractAddress' ? (
+                      <CopyBtn value={item?.result?.value} />
+                    ) : null}
                   </div>
                 </div>
               ))}

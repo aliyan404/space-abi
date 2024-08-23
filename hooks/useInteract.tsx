@@ -4,7 +4,7 @@ import { Contract, shortString } from 'starknet'
 import useAbi from './useAbi'
 import { useNetProvider } from './useNetProvider'
 import { useAccount, useNetwork } from '@starknet-react/core'
-import { CallbackReturnType } from '@/types'
+import { CallbackReturnType, InteractReturnType } from '@/types'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { mainnet, sepolia } from '@starknet-react/chains'
@@ -35,7 +35,9 @@ export default function useInteract(contractAddress: string) {
     }
   }, [abi, contractAddress, rpcProvider, isMounted])
 
-  const interact = async (value: CallbackReturnType) => {
+  const interact = async (
+    value: CallbackReturnType
+  ): Promise<InteractReturnType> => {
     if (!isContractReady || !contract) {
       throw new Error('Contract is not ready')
     }
@@ -46,26 +48,26 @@ export default function useInteract(contractAddress: string) {
         console.log('View outputs:', value.functionName, value.outputs)
         console.log('View function result:', res)
 
-        return interactSwitchRes(res?.toString(),value.outputs[0]?.type)
+        return { type: value.outputs[0]?.type, value: res.toString() }
       } else if (value?.stateMutability === 'external') {
         if (!account) {
           toast.error('Please connect your wallet')
-          return
+          return { type: 'Error', value: 'null' }
         }
 
         if (chains[network]?.id !== connectNetwork) {
           if (connectNetwork === chains['sepolia']?.id) {
             toast.error('Please switch to Mainnet network')
-            return
+            return { type: 'Error', value: 'null' }
           } else if (connectNetwork === chains['mainnet']?.id) {
             toast.error('Please switch to Sepolia network')
-            return
+            return { type: 'Error', value: 'null' }
           }
         }
 
         contract.connect(account)
         const res = await contract.invoke(value.functionName, value.inputs)
-        return res?.toString()
+        return { type: value.outputs[0]?.type, value: res.toString() }
       }
       throw new Error('Unsupported state mutability')
     } catch (error: any) {

@@ -7,7 +7,7 @@ type CallbackReturnType = {
 
 type ContarctMsgReturnType = {
   functionName: string
-  reslut: InteractReturnType
+  result: InteractReturnType
 }
 
 type InteractReturnType = {
