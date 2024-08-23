@@ -1,6 +1,6 @@
 'use client'
 
-import { Contract } from 'starknet'
+import { Contract, shortString } from 'starknet'
 import useAbi from './useAbi'
 import { useNetProvider } from './useNetProvider'
 import { useAccount, useNetwork } from '@starknet-react/core'
@@ -8,6 +8,7 @@ import { CallbackReturnType } from '@/types'
 import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { mainnet, sepolia } from '@starknet-react/chains'
+import { interactSwitchRes } from '@/utils'
 
 export default function useInteract(contractAddress: string) {
   const { abi, isMounted } = useAbi(contractAddress)
@@ -42,8 +43,10 @@ export default function useInteract(contractAddress: string) {
     try {
       if (value?.stateMutability === 'view') {
         const res = await contract.call(value.functionName, value.inputs)
+        console.log('View outputs:', value.functionName, value.outputs)
         console.log('View function result:', res)
-        return res?.toString()
+
+        return interactSwitchRes(res?.toString(),value.outputs[0]?.type)
       } else if (value?.stateMutability === 'external') {
         if (!account) {
           toast.error('Please connect your wallet')

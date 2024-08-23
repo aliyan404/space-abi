@@ -33,6 +33,7 @@ export default function ContractMsg({
               functionName: fn.name,
               stateMutability: fn.state_mutability,
               inputs: fn.inputs,
+              outputs: fn.outputs,
             })
             console.log('res', res)
             return { name: fn.name, result: res }
@@ -79,6 +80,7 @@ export default function ContractMsg({
           functionName: fn.name,
           stateMutability: fn.state_mutability,
           inputs: fn.inputs,
+          outputs: fn.outputs,
         })
         const updatedData = data?.map((item: any) =>
           item.name === itemName ? { ...item, result: res } : item
@@ -108,7 +110,7 @@ export default function ContractMsg({
           <div className="flex flex-col space-y-4">
             <div className="flex items-center space-x-4">
               <span className="text-lg font-semibold text-gray-700">
-                {'0X' + data?.find((i: any) => i.name === 'name')?.result}
+                {data?.find((i: any) => i.name === 'name')?.result}
               </span>
               <div className="flex items-center space-x-2 flex-1">
                 <span className="text-sm text-gray-500 font-mono">
@@ -174,7 +176,6 @@ export default function ContractMsg({
                     </button>
                   </div>
                   <div className="text-sm text-gray-600 break-all">
-                    {}
                     {JSON.stringify(item.result)}
                   </div>
                 </div>

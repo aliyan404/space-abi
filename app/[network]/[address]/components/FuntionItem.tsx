@@ -54,13 +54,14 @@ export default function FunctionItem({
     e.preventDefault()
     console.log('fnMsginputs', fnMsg?.inputs)
     console.log('inputValues', inputValues)
-    const param = fnMsg?.inputs.map((value: any) => inputValues[value.name])
-    console.log('param', param)
+    const inputs = fnMsg?.inputs.map((value: any) => inputValues[value.name])
+    const outputs = fnMsg?.outputs
 
     const callback: CallbackReturnType = {
       functionName: fnMsg?.name,
       stateMutability: fnMsg?.state_mutability,
-      inputs: param,
+      inputs: inputs,
+      outputs: outputs,
     }
 
     console.log('callback', callback)

@@ -2,11 +2,17 @@ type CallbackReturnType = {
   functionName: string
   stateMutability: string
   inputs: any[]
+  outputs: any[]
 }
 
 type ContarctMsgReturnType = {
   functionName: string
-  res: string
+  reslut: InteractReturnType
 }
 
-export type { CallbackReturnType, ContarctMsgReturnType }
+type InteractReturnType = {
+  type: string
+  value: string
+}
+
+export type { CallbackReturnType, ContarctMsgReturnType, InteractReturnType }
