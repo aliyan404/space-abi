@@ -10,6 +10,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { X } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import useSWR from 'swr'
 
 export default function FunctionList({
   contractAddress,
@@ -22,7 +23,14 @@ export default function FunctionList({
   onSelect: any
   onDelete: any
 }) {
-  const functionsData = useFunction(contractAddress)
+  const { functions, isFunctionReady } = useFunction(contractAddress)
+
+  const { data: functionsData } = useSWR(
+    ['getFunctionList', isFunctionReady],
+    async () => {
+      return functions
+    }
+  )
 
   const handleAdd = (fn: any) => {
     onSelect(fn)

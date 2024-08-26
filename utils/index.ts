@@ -19,3 +19,5 @@ export const interactSwitchRes = (type: string, value: string) => {
 
   return value
 }
+
+

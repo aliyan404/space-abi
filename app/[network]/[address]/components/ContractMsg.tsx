@@ -1,6 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import React, { useState, useEffect } from 'react'
-import useFunction from '@/hooks/useFunction'
 import useInteract from '@/hooks/useInteract'
 import { useNetProvider } from '@/hooks/useNetProvider'
 import useSWR from 'swr'
@@ -8,53 +7,62 @@ import LoadingBar from './LoadingBar'
 import { interactSwitchRes, shortenAddress } from '@/utils'
 import CopyBtn from '@/components/copy-btn'
 import { ContarctMsgReturnType } from '@/types'
+import useFunction from '@/hooks/useFunction'
 
 export default function ContractMsg({
   contractAddress,
 }: {
   contractAddress: string
 }) {
-  const functions = useFunction(contractAddress)
+  const { functions, isFunctionReady } = useFunction(contractAddress)
   const { network } = useNetProvider()
   const { interact, isContractReady } = useInteract(contractAddress)
 
   const { data, isLoading, mutate } = useSWR(
-    isContractReady ? ['/contractMsg', functions] : null,
-    async (): Promise<ContarctMsgReturnType[]> => {
-      const showFunctions =
-        functions?.filter(
-          (fn: any) => fn.state_mutability === 'view' && fn.inputs.length === 0
-        ) || []
-      console.log('showFunctions', showFunctions)
+    ['/contractMsg', isFunctionReady, isContractReady],
+    async () => {
+      console.log(
+        'isContractReady, isFunctionReady,',
+        isContractReady,
+        isFunctionReady
+      )
+      if (isContractReady && isFunctionReady) {
+        console.log('functions', functions)
+        const showFunctions =
+          functions?.filter(
+            (fn: any) =>
+              fn.state_mutability === 'view' && fn.inputs.length === 0
+          ) || []
+        console.log('showFunctions', showFunctions)
 
-      const result = await Promise.all(
-        showFunctions.map(async (fn: any) => {
-          try {
-            const res = await interact({
-              functionName: fn.name,
-              stateMutability: fn.state_mutability,
-              inputs: fn.inputs,
-              outputs: fn.outputs,
-            })
-            console.log('res', res)
-            return {
-              functionName: fn.name,
-              result: res,
-            } as ContarctMsgReturnType
-          } catch (error) {
-            console.error(`Error in function ${fn.name}:`, error)
-            return
-          }
-        })
-      )
-      return result.filter(
-        (item) => item.result !== undefined && item.result !== 'Error'
-      )
-    },
-    { revalidateOnFocus: false, shouldRetryOnError: false }
+        const result = await Promise.all(
+          showFunctions.map(async (fn: any) => {
+            try {
+              const res = await interact({
+                functionName: fn.name,
+                stateMutability: fn.state_mutability,
+                inputs: fn.inputs,
+                outputs: fn.outputs,
+              })
+              console.log('res', res)
+              return {
+                functionName: fn.name,
+                result: res,
+              } as ContarctMsgReturnType
+            } catch (error) {
+              console.error(`Error in function ${fn.name}:`, error)
+              return
+            }
+          })
+        )
+        return result.filter(
+          (item: any) => item.result !== undefined && item.result !== 'Error'
+        )
+      }
+    }
   )
 
-  console.log('data', data)
+  console.log('ContractMsgData: ', data)
 
   const isDataReady =
     data && data.every((item: any) => item.result !== undefined)

@@ -75,5 +75,5 @@ export default function useInteract(contractAddress: string) {
     }
   }
 
-  return { interact, abi, isContractReady }
+  return { interact, isContractReady }
 }

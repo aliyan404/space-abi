@@ -4,7 +4,10 @@ import toast from 'react-hot-toast'
 import { Abi } from 'starknet'
 import { useNetProvider } from './useNetProvider'
 
-export default function useAbi(contractAddress: string) {
+export default function useAbi(
+  contractAddress: string,
+  type: 'Contract' | 'Class' = 'Contract'
+) {
   const [abi, setAbi] = useState<Abi>([])
   const [isMounted, setIsMounted] = useState(false)
   const { rpcProvider } = useNetProvider()
@@ -12,8 +15,15 @@ export default function useAbi(contractAddress: string) {
   const updateAbi = async (rpcNode: any, contractAddress: string) => {
     try {
       if (!contractAddress) return
-      const { abi } = await rpcNode.getClassAt(contractAddress)
-      setAbi(abi)
+
+      if (type === 'Contract') {
+        const { abi } = await rpcNode.getClassAt(contractAddress)
+        setAbi(abi)
+      } else if (type === 'Class') {
+        const { abi } = await rpcNode.getClassHashAt(contractAddress)
+        setAbi(abi)
+      }
+
       setIsMounted(true)
     } catch (error) {
       setIsMounted(false)
