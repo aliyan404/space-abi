@@ -9,7 +9,20 @@ export default function useFunction(contractAddress: string) {
 
   const filterFunctions = useMemo(() => {
     if (!abi) return
-    const functions = abi.find((item: any) => item.type === 'interface')?.items
+
+    const allFunctions = abi.flatMap((item: any) => {
+      if (item.type === 'function') {
+        return [item]
+      } else if (item.type === 'interface') {
+        return item?.items || []
+      } else {
+        return []
+      }
+    })
+
+    const functions = allFunctions.filter(
+      (item: any) => item.type === 'function'
+    )
     return functions
   }, [abi])
 

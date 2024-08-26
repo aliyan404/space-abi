@@ -29,9 +29,11 @@ export default function Home() {
     '0x031b79a7d00cae6fba1c6c2da59c00ea8764eeff1235b8115ed04229211c590e'
 
   const [contractAddress, setContractAddress] = useState<string>(initailState)
-  const { isMounted } = useAbi(contractAddress)
+  const { abi, isMounted } = useAbi(contractAddress)
   const router = useRouter()
   const { network, setNetwork, setRpcProvider } = useNetProvider()
+
+  console.log('abi', abi)
 
   const handleNetWork = (value: string) => {
     if (value === 'mainnet') {
