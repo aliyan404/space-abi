@@ -1,0 +1,3 @@
+function isCorrectWalletNet(wallet: string) {
+  
+}

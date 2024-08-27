@@ -1,5 +1,5 @@
 import { Abi, Contract } from 'starknet'
-import { getAddressType } from './contarctAddress'
+import { getContractType } from './contarct'
 
 async function isAbiValid(address: string, rpcProvider: any): Promise<boolean> {
   try {
@@ -12,7 +12,7 @@ async function isAbiValid(address: string, rpcProvider: any): Promise<boolean> {
 
 async function getContractAbi(address: string, rpcProvider: any) {
   try {
-    const type = await getAddressType(address, rpcProvider)
+    const type = await getContractType(address, rpcProvider)
     const normalAbi = await getNormalAbi(address, rpcProvider)
     if (type === 'Normal') {
       return normalAbi

@@ -1,6 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import React, { useState, useEffect } from 'react'
-import useInteract from '@/hooks/useInteract'
 import { useNetProvider } from '@/hooks/useNetProvider'
 import useSWR from 'swr'
 import LoadingBar from './LoadingBar'
@@ -8,6 +7,8 @@ import { interactSwitchRes, shortenAddress } from '@/utils'
 import CopyBtn from '@/components/copy-btn'
 import { ContarctMsgReturnType } from '@/types'
 import { useFunctions } from '@/hooks/useFunctionsProvider'
+import { interact } from '@/utils/contarct'
+import { useNetwork } from '@starknet-react/core'
 
 export default function ContractMsg({
   contractAddress,
@@ -16,18 +17,13 @@ export default function ContractMsg({
 }) {
   const { functions, isFunctionsReady } = useFunctions()
   const { network, rpcProvider } = useNetProvider()
-  const { interact, isContractReady, abi, updateAbi } =
-    useInteract(contractAddress)
+  const connectNetwork = useNetwork().chain.name
 
   const { data, isLoading, mutate } = useSWR(
-    ['/contractMsg', isFunctionsReady, isContractReady],
+    ['/contractMsg', isFunctionsReady],
     async () => {
-      console.log(
-        'isContractReady, isFunctionReady,',
-        isContractReady,
-        isFunctionsReady
-      )
-      if (isContractReady && isFunctionsReady) {
+      console.log('isContractReady, isFunctionReady,', isFunctionsReady)
+      if (isFunctionsReady) {
         const showFunctions =
           functions?.filter(
             (fn: any) =>
@@ -38,12 +34,18 @@ export default function ContractMsg({
         const result = await Promise.all(
           showFunctions.map(async (fn: any) => {
             try {
-              const res = await interact({
-                functionName: fn.name,
-                stateMutability: fn.state_mutability,
-                inputs: fn.inputs,
-                outputs: fn.outputs,
-              })
+              const res = await interact(
+                {
+                  functionName: fn.name,
+                  stateMutability: fn.state_mutability,
+                  inputs: fn.inputs,
+                  outputs: fn.outputs,
+                },
+                contractAddress,
+                rpcProvider,
+                network,
+                connectNetwork
+              )
               return {
                 functionName: fn.name,
                 result: res,
@@ -72,7 +74,7 @@ export default function ContractMsg({
   const [progress, setProgress] = useState(0)
 
   useEffect(() => {
-    if (!isContractReady) {
+    if (!isFunctionsReady) {
       setProgress(25)
     } else if (isLoading) {
       setProgress(50)
@@ -81,7 +83,7 @@ export default function ContractMsg({
     } else {
       setProgress(100)
     }
-  }, [isContractReady, isLoading, isDataReady])
+  }, [isLoading, isDataReady, isFunctionsReady])
 
   const [refreshingItems, setRefreshingItems] = useState<string[]>([])
 
@@ -90,12 +92,18 @@ export default function ContractMsg({
     const fn = functions?.find((f: any) => f.name === itemName)
     if (fn) {
       try {
-        const res = await interact({
-          functionName: fn.name,
-          stateMutability: fn.state_mutability,
-          inputs: fn.inputs,
-          outputs: fn.outputs,
-        })
+        const res = await interact(
+          {
+            functionName: fn.name,
+            stateMutability: fn.state_mutability,
+            inputs: fn.inputs,
+            outputs: fn.outputs,
+          },
+          contractAddress,
+          rpcProvider,
+          network,
+          connectNetwork
+        )
         const updatedData = data?.map((item: any) =>
           item.functionName === itemName ? { ...item, result: res } : item
         )
@@ -113,7 +121,7 @@ export default function ContractMsg({
     data?.find((i: any) => i.functionName === 'name')?.result.value || ''
   )
 
-  if (!isContractReady || isLoading || !isDataReady) {
+  if (!isFunctionsReady || isLoading || !isDataReady) {
     return <LoadingBar progress={progress} message="Loading Contract data..." />
   }
 

@@ -16,14 +16,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import useAbi from '@/hooks/useAbi'
 import { useNetProvider } from '@/hooks/useNetProvider'
 import { mainnetProvider, sepoliaProvider } from '@/components/rpc-provider'
 import { useRouter } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { useState} from 'react'
 import toast from 'react-hot-toast'
 import '@/style/home.css'
-import { getAddressType } from '@/utils/contarctAddress'
 import { isAbiValid } from '@/utils/abi'
 
 export default function Home() {

@@ -6,15 +6,19 @@ import FunctionForm from './components/FunctionForm'
 import { CallbackReturnType } from '@/types'
 import { useParams } from 'next/navigation'
 import ContractMsg from './components/ContractMsg'
-import useInteract from '@/hooks/useInteract'
 import { Button } from '@/components/ui/button'
 import { AlignJustify, X } from 'lucide-react'
 import { interactSwitchRes } from '@/utils'
+import { interact } from '@/utils/contarct'
+import { useNetProvider } from '@/hooks/useNetProvider'
+import { useAccount, useNetwork } from '@starknet-react/core'
 
 export default function ABIForm() {
   const params = useParams()
-  const contractAddress = params.address
-  const { interact, isContractReady } = useInteract(contractAddress as string)
+  const contractAddress = params.address as string
+  const { network, rpcProvider } = useNetProvider()
+  const { account } = useAccount()
+  const connectNetwork = useNetwork().chain.name
   const [selectFunctions, setSelectFunctions] = useState<any[]>([])
   const [response, setResponse] = useState<Record<string, React.ReactNode>>({})
 
@@ -30,20 +34,25 @@ export default function ABIForm() {
 
   const handleCall = async (value: CallbackReturnType) => {
     try {
-      if (isContractReady) {
-        const res = await interact(value)
-        setResponse({
-          ...response,
-          [value.functionName]: (
-            <div className="bg-white shadow-md rounded-lg p-4 mt-4">
-              <h2 className="font-bold text-gray-700 mb-2">Result:</h2>
-              <div className="bg-gray-100 p-2 rounded">
-                {interactSwitchRes(res?.type, res?.value)}
-              </div>
+      const res = await interact(
+        value,
+        contractAddress,
+        rpcProvider,
+        network,
+        connectNetwork,
+        account
+      )
+      setResponse({
+        ...response,
+        [value.functionName]: (
+          <div className="bg-white shadow-md rounded-lg p-4 mt-4">
+            <h2 className="font-bold text-gray-700 mb-2">Result:</h2>
+            <div className="bg-gray-100 p-2 rounded">
+              {interactSwitchRes(res?.type, res?.value!)}
             </div>
-          ),
-        })
-      }
+          </div>
+        ),
+      })
     } catch (error: any) {
       console.log('handleCall error', error)
     }
