@@ -1,5 +1,5 @@
 import { CallbackReturnType, ContractAddressType } from '@/types'
-import { Abi, Contract } from 'starknet'
+import { Contract } from 'starknet'
 import { getContractAbi } from './abi'
 import toast from 'react-hot-toast'
 import { mainnet, sepolia } from '@starknet-react/chains'
@@ -34,8 +34,8 @@ async function interact(
     if (value?.stateMutability === 'view') {
       const res = await contract.call(value.functionName, value.inputs)
       console.log(value.functionName, ' result:', res)
-
-      return { type: value.outputs[0]?.type, value: res.toString() }
+      const showRes = stringifyResult(res)
+      return { type: value.outputs[0]?.type, value: showRes }
     } else if (value?.stateMutability === 'external') {
       if (!account) {
         toast.error('Please connect your wallet')
@@ -49,16 +49,27 @@ async function interact(
         const expectedNetwork =
           connectNetwork === chains.sepolia.network ? 'Mainnet' : 'Sepolia'
         toast.error(`Please switch to ${expectedNetwork} network`)
-        return { type: 'Error', value: 'null' }
+        return
       }
 
       contract.connect(account)
       const res = await contract.invoke(value.functionName, value.inputs)
-      return { type: value.outputs[0]?.type, value: res.toString() }
+      const showRes = stringifyResult(res)
+      return { type: value.outputs[0]?.type, value: showRes }
     }
   } catch (error) {
     console.log('interact error:', error)
   }
 }
 
-export { getContractType, interact}
+function stringifyResult(result: any) {
+  if (typeof result === 'object') {
+    return JSON.stringify(result, (key, value) =>
+      typeof value === 'bigint' ? value.toString() : value
+    )
+  } else {
+    return result.toString()
+  }
+}
+
+export { getContractType, interact }

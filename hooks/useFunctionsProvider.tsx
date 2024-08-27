@@ -2,7 +2,7 @@
 
 import { ContractAddressType } from '@/types'
 import { getContractAbi } from '@/utils/abi'
-import { getFunctionList } from '@/utils/functionlist'
+import { getFunctionList } from '@/utils/function'
 import { createContext, useContext, useEffect, useState } from 'react'
 import { useNetProvider } from './useNetProvider'
 

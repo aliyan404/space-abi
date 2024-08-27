@@ -16,8 +16,5 @@ export const interactSwitchRes = (type: string, value: string) => {
   if (type === 'core::starknet::contract_address::ContractAddress') {
     return '0x' + shortenAddress(value)
   }
-
   return value
 }
-
-

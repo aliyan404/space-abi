@@ -19,7 +19,7 @@ import {
 import { useNetProvider } from '@/hooks/useNetProvider'
 import { mainnetProvider, sepoliaProvider } from '@/components/rpc-provider'
 import { useRouter } from 'next/navigation'
-import { useState} from 'react'
+import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import '@/style/home.css'
 import { isAbiValid } from '@/utils/abi'
@@ -29,6 +29,28 @@ export default function Home() {
   const { network, setNetwork, setRpcProvider, rpcProvider } = useNetProvider()
   const initailStae = { network: network, address: '' }
   const [baseMsg, setBaseMsg] = useState<any>(initailStae)
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const storedNetwork = localStorage.getItem('network')
+      const storedAddress = localStorage.getItem('address')
+      if (storedNetwork) {
+        setBaseMsg((prev: any) => ({ ...prev, network: storedNetwork }))
+        setNetwork(storedNetwork) 
+        setRpcProvider(
+          storedNetwork === 'mainnet' ? mainnetProvider : sepoliaProvider
+        )
+      }
+      if (storedAddress) {
+        setBaseMsg((prev: any) => ({ ...prev, address: storedAddress }))
+        const res = await isAbiValid(storedAddress, rpcProvider)
+        setIsValid(res === true)
+      }
+    }
+    fetchData()
+  }, [rpcProvider])
+
+  const [isValid, setIsValid] = useState<boolean>(false)
 
   const handleNetWork = (value: string) => {
     if (value === 'mainnet') {
@@ -40,13 +62,15 @@ export default function Home() {
       setRpcProvider(sepoliaProvider)
       setBaseMsg({ ...baseMsg, network: 'sepolia' })
     }
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('network', value)
-    }
+    localStorage.setItem('network', value)
   }
 
-  const handleAddress = (e: any) => {
-    setBaseMsg({ ...baseMsg, address: e.target.value })
+  const handleAddress = async (e: any) => {
+    const address = e.target.value
+    setBaseMsg({ ...baseMsg, address })
+    localStorage.setItem('address', address) 
+    const res = await isAbiValid(address, rpcProvider)
+    setIsValid(res === true) 
   }
 
   const handleSubmit = async (e: any) => {
@@ -102,7 +126,7 @@ export default function Home() {
           <CardFooter className="p-6 flex justify-center">
             <Button
               type="submit"
-              disabled={baseMsg.address === '' || baseMsg.network === ''}
+              disabled={isValid ? false : true}
               className="w-48 h-14 text-lg bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg"
             >
               Load Contract

@@ -84,7 +84,6 @@ export default function ABIForm() {
           `}
         >
           <FunctionList
-            contractAddress={contractAddress}
             selectFunctions={selectFunctions}
             onSelect={handleSelect}
             onDelete={handleDelete}

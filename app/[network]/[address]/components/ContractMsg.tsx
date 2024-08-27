@@ -60,11 +60,11 @@ export default function ContractMsg({
           (item: any) => item.result !== undefined && item.result !== 'Error'
         )
       }
-      return null // Return null if conditions are not met
+      return null
     },
     {
-      revalidateOnFocus: false, // Prevent revalidation on window focus
-      shouldRetryOnError: false, // Prevent retrying on error
+      revalidateOnFocus: false,
+      shouldRetryOnError: false,
     }
   )
 
@@ -137,7 +137,7 @@ export default function ContractMsg({
           <div className="flex flex-col space-y-4">
             <div className="flex items-center space-x-4">
               <span className="text-lg font-semibold text-gray-700">
-                {contractName}
+                {contractName ? contractName : 'Unknown'}
               </span>
               <div className="flex items-center space-x-2 flex-1">
                 <span className="text-sm text-gray-500 font-mono">
@@ -205,9 +205,8 @@ export default function ContractMsg({
                     </button>
                   </div>
                   <div className="text-sm text-gray-600 break-all">
-                    {JSON.stringify(
-                      interactSwitchRes(item?.result?.type, item?.result?.value)
-                    )}
+                    {interactSwitchRes(item?.result?.type, item?.result?.value)}
+
                     {item?.result?.type ===
                     'core::starknet::contract_address::ContractAddress' ? (
                       <CopyBtn value={item?.result?.value} />

@@ -13,12 +13,10 @@ import useSWR from 'swr'
 import { useFunctions } from '@/hooks/useFunctionsProvider'
 
 export default function FunctionList({
-  contractAddress,
   selectFunctions,
   onSelect,
   onDelete,
 }: {
-  contractAddress: any
   selectFunctions: any[]
   onSelect: any
   onDelete: any
@@ -42,7 +40,7 @@ export default function FunctionList({
   }
 
   return (
-    <div className="fixed left-0 top-3 bottom-0 w-full bg-white shadow-lg p-4 flex flex-col overflow-hidden">
+    <div className="fixed left-0 top-3 bottom-0 w-full bg-white shadow-lg p-4 flex flex-col overflow-hidden ">
       <ScrollArea className="h-full w-full pr-4">
         <Accordion
           type="multiple"
@@ -51,7 +49,7 @@ export default function FunctionList({
         >
           <AccordionItem value="read" className="border-b">
             <AccordionTrigger className="text-lg font-semibold px-2 py-3 text-blue-600 hover:text-blue-800">
-              Read Functions
+              Read
             </AccordionTrigger>
             <AccordionContent className="p-2 space-y-1">
               {functionsData
@@ -84,7 +82,7 @@ export default function FunctionList({
           </AccordionItem>
           <AccordionItem value="write" className="border-b">
             <AccordionTrigger className="text-lg font-semibold px-2 py-3 text-purple-600 hover:text-purple-800">
-              Write Functions
+              Write
             </AccordionTrigger>
             <AccordionContent className="p-2 space-y-1">
               {functionsData
