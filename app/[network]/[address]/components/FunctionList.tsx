@@ -1,6 +1,5 @@
 'use client'
 
-import useFunction from '@/hooks/useFunction'
 import {
   Accordion,
   AccordionContent,
@@ -11,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { X } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import useSWR from 'swr'
+import { useFunctions } from '@/hooks/useFunctionsProvider'
 
 export default function FunctionList({
   contractAddress,
@@ -23,10 +23,10 @@ export default function FunctionList({
   onSelect: any
   onDelete: any
 }) {
-  const { functions, isFunctionReady } = useFunction(contractAddress)
+  const { functions, isFunctionsReady } = useFunctions()
 
   const { data: functionsData } = useSWR(
-    ['getFunctionList', isFunctionReady],
+    ['getFunctionList', isFunctionsReady],
     async () => {
       return functions
     }

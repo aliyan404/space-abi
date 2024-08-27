@@ -1,8 +1,7 @@
 import { Abi } from 'starknet'
 
-function getFunctionList(abi: Abi): any[] {
+function getFunctionList(abi: Abi | undefined): any[] {
   if (!abi) return []
-  console.log('getFunctionList', abi)
 
   const allFunctions = abi.flatMap((item: any) => {
     if (item.type === 'function') {
@@ -15,16 +14,8 @@ function getFunctionList(abi: Abi): any[] {
   })
 
   const functions = allFunctions.filter((item: any) => item.type === 'function')
+  console.log('getFunctionList', functions)
   return functions
 }
 
-function getAddressType(abi: Abi) {
-  const proxyFunctions = ['__default__', 'getImplementationHash', 'upgrade']
-  const hasProxyFunctions = proxyFunctions.some((func) =>
-    abi.some((item) => item.type === 'function' && item.name === func)
-  )
-
-  return hasProxyFunctions ? 'Proxy' : 'Normal'
-}
-
-export { getFunctionList, getAddressType }
+export { getFunctionList }

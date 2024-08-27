@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import { Abi } from 'starknet'
 import { useNetProvider } from './useNetProvider'
-import { getImplementedClass, getImplementedClassAbi } from '@/utils/abi'
+import { getImplementedClassHash, getImplementedClassAbi } from '@/utils/abi'
 
 export default function useAbi(
   contractAddress: string,
@@ -25,7 +25,7 @@ export default function useAbi(
       if (type === 'Normal') {
         setAbi(res1?.abi)
       } else if (type === 'Proxy') {
-        const classHash = await getImplementedClass(
+        const classHash = await getImplementedClassHash(
           abi,
           contractAddress,
           rpcProvider

@@ -7,45 +7,27 @@ import LoadingBar from './LoadingBar'
 import { interactSwitchRes, shortenAddress } from '@/utils'
 import CopyBtn from '@/components/copy-btn'
 import { ContarctMsgReturnType } from '@/types'
-import useFunction from '@/hooks/useFunction'
-import { getImplementedClass, getImplementedClassAbi } from '@/utils/abi'
-import useAbi from '@/hooks/useAbi'
+import { useFunctions } from '@/hooks/useFunctionsProvider'
 
 export default function ContractMsg({
   contractAddress,
 }: {
   contractAddress: string
 }) {
-  const { functions, isFunctionReady, addressType } =
-    useFunction(contractAddress)
+  const { functions, isFunctionsReady } = useFunctions()
   const { network, rpcProvider } = useNetProvider()
   const { interact, isContractReady, abi, updateAbi } =
     useInteract(contractAddress)
 
   const { data, isLoading, mutate } = useSWR(
-    ['/contractMsg', isFunctionReady, isContractReady],
+    ['/contractMsg', isFunctionsReady, isContractReady],
     async () => {
       console.log(
         'isContractReady, isFunctionReady,',
         isContractReady,
-        isFunctionReady
+        isFunctionsReady
       )
-      if (isContractReady && isFunctionReady) {
-        let currentAbi = abi
-
-        if (addressType === 'Proxy') {
-          const classHash = await getImplementedClass(
-            abi,
-            contractAddress,
-            rpcProvider
-          )
-
-          const classAbi = await getImplementedClassAbi(classHash, rpcProvider)
-          updateAbi(classAbi, classHash, 'Proxy')
-
-          currentAbi = classAbi
-        }
-
+      if (isContractReady && isFunctionsReady) {
         const showFunctions =
           functions?.filter(
             (fn: any) =>
@@ -56,15 +38,12 @@ export default function ContractMsg({
         const result = await Promise.all(
           showFunctions.map(async (fn: any) => {
             try {
-              const res = await interact(
-                {
-                  functionName: fn.name,
-                  stateMutability: fn.state_mutability,
-                  inputs: fn.inputs,
-                  outputs: fn.outputs,
-                },
-                currentAbi
-              )
+              const res = await interact({
+                functionName: fn.name,
+                stateMutability: fn.state_mutability,
+                inputs: fn.inputs,
+                outputs: fn.outputs,
+              })
               return {
                 functionName: fn.name,
                 result: res,
@@ -86,16 +65,6 @@ export default function ContractMsg({
       shouldRetryOnError: false, // Prevent retrying on error
     }
   )
-
-  useEffect(() => {
-    console.log('State changed:', {
-      isContractReady,
-      isFunctionReady,
-      data,
-      isLoading,
-    })
-  }, [isContractReady, isFunctionReady, data, isLoading])
-  console.log('ContractMsgData: ', data)
 
   const isDataReady =
     data && data.every((item: any) => item.result !== undefined)
@@ -127,7 +96,7 @@ export default function ContractMsg({
           inputs: fn.inputs,
           outputs: fn.outputs,
         })
-        const updatedData = data?.map((item: ContarctMsgReturnType) =>
+        const updatedData = data?.map((item: any) =>
           item.functionName === itemName ? { ...item, result: res } : item
         )
         mutate(updatedData, false)
@@ -141,8 +110,7 @@ export default function ContractMsg({
 
   const contractName = interactSwitchRes(
     'core::felt252',
-    data?.find((i: ContarctMsgReturnType) => i.functionName === 'name')?.result
-      .value || ''
+    data?.find((i: any) => i.functionName === 'name')?.result.value || ''
   )
 
   if (!isContractReady || isLoading || !isDataReady) {
@@ -191,7 +159,7 @@ export default function ContractMsg({
             <div className="text-center text-gray-500">Loading...</div>
           ) : (
             <div className="space-y-4">
-              {data?.map((item: ContarctMsgReturnType) => (
+              {data?.map((item: any) => (
                 <div
                   key={item.functionName}
                   className={`bg-white p-4 rounded-lg shadow-sm border border-gray-200 relative ${
