@@ -20,20 +20,38 @@ import useAbi from '@/hooks/useAbi'
 import { useNetProvider } from '@/hooks/useNetProvider'
 import { mainnetProvider, sepoliaProvider } from '@/components/rpc-provider'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import '@/style/home.css'
 
 export default function Home() {
-  const initailState =
-    '0x031b79a7d00cae6fba1c6c2da59c00ea8764eeff1235b8115ed04229211c590e'
+  // const initailState =
+  //   '0x031b79a7d00cae6fba1c6c2da59c00ea8764eeff1235b8115ed04229211c590e'
 
-  const [contractAddress, setContractAddress] = useState<string>(initailState)
+  const [contractAddress, setContractAddress] = useState<string>(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('contractAddress') || ''
+    }
+    return ''
+  })
   const { abi, isMounted } = useAbi(contractAddress)
   const router = useRouter()
   const { network, setNetwork, setRpcProvider } = useNetProvider()
 
-  console.log('abi', abi)
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedNetwork = localStorage.getItem('network')
+      if (savedNetwork) {
+        handleNetWork(savedNetwork)
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('contractAddress', contractAddress)
+    }
+  }, [contractAddress])
 
   const handleNetWork = (value: string) => {
     if (value === 'mainnet') {
@@ -42,6 +60,9 @@ export default function Home() {
     } else if (value === 'sepolia') {
       setNetwork('sepolia')
       setRpcProvider(sepoliaProvider)
+    }
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('network', value)
     }
   }
 

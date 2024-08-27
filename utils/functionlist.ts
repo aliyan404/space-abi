@@ -1,7 +1,8 @@
 import { Abi } from 'starknet'
 
-function getFunctionList(abi: Abi):any[] {
+function getFunctionList(abi: Abi): any[] {
   if (!abi) return []
+  console.log('getFunctionList', abi)
 
   const allFunctions = abi.flatMap((item: any) => {
     if (item.type === 'function') {
@@ -23,8 +24,7 @@ function getAddressType(abi: Abi) {
     abi.some((item) => item.type === 'function' && item.name === func)
   )
 
-  return hasProxyFunctions ? 'Class' : 'Contract'
+  return hasProxyFunctions ? 'Proxy' : 'Normal'
 }
-
 
 export { getFunctionList, getAddressType }

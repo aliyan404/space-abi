@@ -8,15 +8,19 @@ import { interactSwitchRes, shortenAddress } from '@/utils'
 import CopyBtn from '@/components/copy-btn'
 import { ContarctMsgReturnType } from '@/types'
 import useFunction from '@/hooks/useFunction'
+import { getImplementedClass, getImplementedClassAbi } from '@/utils/abi'
+import useAbi from '@/hooks/useAbi'
 
 export default function ContractMsg({
   contractAddress,
 }: {
   contractAddress: string
 }) {
-  const { functions, isFunctionReady } = useFunction(contractAddress)
-  const { network } = useNetProvider()
-  const { interact, isContractReady } = useInteract(contractAddress)
+  const { functions, isFunctionReady, addressType } =
+    useFunction(contractAddress)
+  const { network, rpcProvider } = useNetProvider()
+  const { interact, isContractReady, abi, updateAbi } =
+    useInteract(contractAddress)
 
   const { data, isLoading, mutate } = useSWR(
     ['/contractMsg', isFunctionReady, isContractReady],
@@ -27,7 +31,21 @@ export default function ContractMsg({
         isFunctionReady
       )
       if (isContractReady && isFunctionReady) {
-        console.log('functions', functions)
+        let currentAbi = abi
+
+        if (addressType === 'Proxy') {
+          const classHash = await getImplementedClass(
+            abi,
+            contractAddress,
+            rpcProvider
+          )
+
+          const classAbi = await getImplementedClassAbi(classHash, rpcProvider)
+          updateAbi(classAbi, classHash, 'Proxy')
+
+          currentAbi = classAbi
+        }
+
         const showFunctions =
           functions?.filter(
             (fn: any) =>
@@ -38,13 +56,15 @@ export default function ContractMsg({
         const result = await Promise.all(
           showFunctions.map(async (fn: any) => {
             try {
-              const res = await interact({
-                functionName: fn.name,
-                stateMutability: fn.state_mutability,
-                inputs: fn.inputs,
-                outputs: fn.outputs,
-              })
-              console.log('res', res)
+              const res = await interact(
+                {
+                  functionName: fn.name,
+                  stateMutability: fn.state_mutability,
+                  inputs: fn.inputs,
+                  outputs: fn.outputs,
+                },
+                currentAbi
+              )
               return {
                 functionName: fn.name,
                 result: res,
@@ -59,9 +79,22 @@ export default function ContractMsg({
           (item: any) => item.result !== undefined && item.result !== 'Error'
         )
       }
+      return null // Return null if conditions are not met
+    },
+    {
+      revalidateOnFocus: false, // Prevent revalidation on window focus
+      shouldRetryOnError: false, // Prevent retrying on error
     }
   )
 
+  useEffect(() => {
+    console.log('State changed:', {
+      isContractReady,
+      isFunctionReady,
+      data,
+      isLoading,
+    })
+  }, [isContractReady, isFunctionReady, data, isLoading])
   console.log('ContractMsgData: ', data)
 
   const isDataReady =

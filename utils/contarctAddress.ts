@@ -1,0 +1,1 @@
+import { ContractAddressType } from "@/types";

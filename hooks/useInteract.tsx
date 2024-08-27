@@ -5,23 +5,27 @@ import useAbi from './useAbi'
 import { useNetProvider } from './useNetProvider'
 import { useAccount, useNetwork } from '@starknet-react/core'
 import { CallbackReturnType, InteractReturnType } from '@/types'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import toast from 'react-hot-toast'
 import { mainnet, sepolia } from '@starknet-react/chains'
 
-export default function useInteract(contractAddress: string) {
-  const { abi, isMounted } = useAbi(contractAddress)
+export default function useInteract(initialContractAddress: string) {
+  const { abi, updateAbi, isMounted } = useAbi(initialContractAddress)
   const { rpcProvider, network } = useNetProvider()
   const { account } = useAccount()
   const connectNetwork = useNetwork().chain.id
-  const chains = { mainnet: mainnet, sepolia: sepolia } as any
+  const chains = { mainnet, sepolia } as const
   const [contract, setContract] = useState<Contract | null>(null)
   const [isContractReady, setIsContractReady] = useState(false)
 
   useEffect(() => {
-    if (abi && contractAddress && rpcProvider && isMounted) {
+    if (abi && initialContractAddress && rpcProvider && isMounted) {
       try {
-        const newContract = new Contract(abi, contractAddress, rpcProvider)
+        const newContract = new Contract(
+          abi,
+          initialContractAddress,
+          rpcProvider
+        )
         setContract(newContract)
         setIsContractReady(true)
         console.log('Contract initialized successfully')
@@ -29,51 +33,61 @@ export default function useInteract(contractAddress: string) {
         console.error('Error initializing contract:', error)
         setIsContractReady(false)
       }
-    } else {
-      setIsContractReady(false)
     }
-  }, [abi, contractAddress, rpcProvider, isMounted])
+  }, [abi, initialContractAddress, rpcProvider, isMounted])
 
-  const interact = async (
-    value: CallbackReturnType
-  ): Promise<InteractReturnType> => {
-    if (!isContractReady || !contract) {
-      throw new Error('Contract is not ready')
-    }
+  const interact = useCallback(
+    async (
+      value: CallbackReturnType,
+      customAbi?: any
+    ): Promise<InteractReturnType> => {
+      if (!isContractReady && !customAbi) {
+        throw new Error('Contract is not ready')
+      }
 
-    try {
-      if (value?.stateMutability === 'view') {
-        const res = await contract.call(value.functionName, value.inputs)
-        console.log('View outputs:', value.functionName, value.outputs)
-        console.log('View function result:', res)
+      const contractToUse = customAbi
+        ? new Contract(customAbi, initialContractAddress, rpcProvider)
+        : contract
 
-        return { type: value.outputs[0]?.type, value: res.toString() }
-      } else if (value?.stateMutability === 'external') {
-        if (!account) {
-          toast.error('Please connect your wallet')
-          return { type: 'Error', value: 'null' }
-        }
+      if (!contractToUse) {
+        throw new Error('Contract is not available')
+      }
 
-        if (chains[network]?.id !== connectNetwork) {
-          if (connectNetwork === chains['sepolia']?.id) {
-            toast.error('Please switch to Mainnet network')
-            return { type: 'Error', value: 'null' }
-          } else if (connectNetwork === chains['mainnet']?.id) {
-            toast.error('Please switch to Sepolia network')
+      try {
+        if (value?.stateMutability === 'view') {
+          const res = await contractToUse.call(value.functionName, value.inputs)
+          console.log('View outputs:', value.functionName, value.outputs)
+          console.log('View function result:', res)
+
+          return { type: value.outputs[0]?.type, value: res.toString() }
+        } else if (value?.stateMutability === 'external') {
+          if (!account) {
+            toast.error('Please connect your wallet')
             return { type: 'Error', value: 'null' }
           }
+
+          if (chains[network as keyof typeof chains]?.id !== connectNetwork) {
+            const expectedNetwork =
+              connectNetwork === chains.sepolia.id ? 'Mainnet' : 'Sepolia'
+            toast.error(`Please switch to ${expectedNetwork} network`)
+            return { type: 'Error', value: 'null' }
+          }
+
+          contractToUse.connect(account)
+          const res = await contractToUse.invoke(
+            value.functionName,
+            value.inputs
+          )
+          return { type: value.outputs[0]?.type, value: res.toString() }
         }
-
-        contract.connect(account)
-        const res = await contract.invoke(value.functionName, value.inputs)
-        return { type: value.outputs[0]?.type, value: res.toString() }
+        throw new Error('Unsupported state mutability')
+      } catch (error: any) {
+        console.error('handleCall error', error)
+        throw error
       }
-      throw new Error('Unsupported state mutability')
-    } catch (error: any) {
-      console.error('handleCall error', error)
-      throw error
-    }
-  }
+    },
+    [isContractReady, contract, rpcProvider, account, network, connectNetwork]
+  )
 
-  return { interact, isContractReady }
+  return { interact, isContractReady, abi, updateAbi }
 }

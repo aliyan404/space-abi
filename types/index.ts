@@ -15,4 +15,11 @@ type InteractReturnType = {
   value: string
 }
 
-export type { CallbackReturnType, ContarctMsgReturnType, InteractReturnType }
+type ContractAddressType = 'Proxy' | 'Normal'
+
+export type {
+  CallbackReturnType,
+  ContarctMsgReturnType,
+  InteractReturnType,
+  ContractAddressType,
+}
