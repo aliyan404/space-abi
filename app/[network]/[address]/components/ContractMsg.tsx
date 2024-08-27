@@ -1,51 +1,29 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import React, { useState, useEffect } from 'react'
-import useInteract from '@/hooks/useInteract'
 import { useNetProvider } from '@/hooks/useNetProvider'
 import useSWR from 'swr'
 import LoadingBar from './LoadingBar'
 import { interactSwitchRes, shortenAddress } from '@/utils'
 import CopyBtn from '@/components/copy-btn'
 import { ContarctMsgReturnType } from '@/types'
-import useFunction from '@/hooks/useFunction'
-import { getImplementedClass, getImplementedClassAbi } from '@/utils/abi'
-import useAbi from '@/hooks/useAbi'
+import { useFunctions } from '@/hooks/useFunctionsProvider'
+import { interact } from '@/utils/contarct'
+import { useNetwork } from '@starknet-react/core'
 
 export default function ContractMsg({
   contractAddress,
 }: {
   contractAddress: string
 }) {
-  const { functions, isFunctionReady, addressType } =
-    useFunction(contractAddress)
+  const { functions, isFunctionsReady } = useFunctions()
   const { network, rpcProvider } = useNetProvider()
-  const { interact, isContractReady, abi, updateAbi } =
-    useInteract(contractAddress)
+  const connectNetwork = useNetwork().chain.name
 
   const { data, isLoading, mutate } = useSWR(
-    ['/contractMsg', isFunctionReady, isContractReady],
+    ['/contractMsg', isFunctionsReady],
     async () => {
-      console.log(
-        'isContractReady, isFunctionReady,',
-        isContractReady,
-        isFunctionReady
-      )
-      if (isContractReady && isFunctionReady) {
-        let currentAbi = abi
-
-        if (addressType === 'Proxy') {
-          const classHash = await getImplementedClass(
-            abi,
-            contractAddress,
-            rpcProvider
-          )
-
-          const classAbi = await getImplementedClassAbi(classHash, rpcProvider)
-          updateAbi(classAbi, classHash, 'Proxy')
-
-          currentAbi = classAbi
-        }
-
+      console.log('isContractReady, isFunctionReady,', isFunctionsReady)
+      if (isFunctionsReady) {
         const showFunctions =
           functions?.filter(
             (fn: any) =>
@@ -63,7 +41,10 @@ export default function ContractMsg({
                   inputs: fn.inputs,
                   outputs: fn.outputs,
                 },
-                currentAbi
+                contractAddress,
+                rpcProvider,
+                network,
+                connectNetwork
               )
               return {
                 functionName: fn.name,
@@ -79,23 +60,13 @@ export default function ContractMsg({
           (item: any) => item.result !== undefined && item.result !== 'Error'
         )
       }
-      return null // Return null if conditions are not met
+      return null
     },
     {
-      revalidateOnFocus: false, // Prevent revalidation on window focus
-      shouldRetryOnError: false, // Prevent retrying on error
+      revalidateOnFocus: false,
+      shouldRetryOnError: false,
     }
   )
-
-  useEffect(() => {
-    console.log('State changed:', {
-      isContractReady,
-      isFunctionReady,
-      data,
-      isLoading,
-    })
-  }, [isContractReady, isFunctionReady, data, isLoading])
-  console.log('ContractMsgData: ', data)
 
   const isDataReady =
     data && data.every((item: any) => item.result !== undefined)
@@ -103,7 +74,7 @@ export default function ContractMsg({
   const [progress, setProgress] = useState(0)
 
   useEffect(() => {
-    if (!isContractReady) {
+    if (!isFunctionsReady) {
       setProgress(25)
     } else if (isLoading) {
       setProgress(50)
@@ -112,7 +83,7 @@ export default function ContractMsg({
     } else {
       setProgress(100)
     }
-  }, [isContractReady, isLoading, isDataReady])
+  }, [isLoading, isDataReady, isFunctionsReady])
 
   const [refreshingItems, setRefreshingItems] = useState<string[]>([])
 
@@ -121,13 +92,19 @@ export default function ContractMsg({
     const fn = functions?.find((f: any) => f.name === itemName)
     if (fn) {
       try {
-        const res = await interact({
-          functionName: fn.name,
-          stateMutability: fn.state_mutability,
-          inputs: fn.inputs,
-          outputs: fn.outputs,
-        })
-        const updatedData = data?.map((item: ContarctMsgReturnType) =>
+        const res = await interact(
+          {
+            functionName: fn.name,
+            stateMutability: fn.state_mutability,
+            inputs: fn.inputs,
+            outputs: fn.outputs,
+          },
+          contractAddress,
+          rpcProvider,
+          network,
+          connectNetwork
+        )
+        const updatedData = data?.map((item: any) =>
           item.functionName === itemName ? { ...item, result: res } : item
         )
         mutate(updatedData, false)
@@ -141,11 +118,10 @@ export default function ContractMsg({
 
   const contractName = interactSwitchRes(
     'core::felt252',
-    data?.find((i: ContarctMsgReturnType) => i.functionName === 'name')?.result
-      .value || ''
+    data?.find((i: any) => i.functionName === 'name')?.result.value || ''
   )
 
-  if (!isContractReady || isLoading || !isDataReady) {
+  if (!isFunctionsReady || isLoading || !isDataReady) {
     return <LoadingBar progress={progress} message="Loading Contract data..." />
   }
 
@@ -161,7 +137,7 @@ export default function ContractMsg({
           <div className="flex flex-col space-y-4">
             <div className="flex items-center space-x-4">
               <span className="text-lg font-semibold text-gray-700">
-                {contractName}
+                {contractName ? contractName : 'Unknown'}
               </span>
               <div className="flex items-center space-x-2 flex-1">
                 <span className="text-sm text-gray-500 font-mono">
@@ -191,7 +167,7 @@ export default function ContractMsg({
             <div className="text-center text-gray-500">Loading...</div>
           ) : (
             <div className="space-y-4">
-              {data?.map((item: ContarctMsgReturnType) => (
+              {data?.map((item: any) => (
                 <div
                   key={item.functionName}
                   className={`bg-white p-4 rounded-lg shadow-sm border border-gray-200 relative ${
@@ -229,9 +205,8 @@ export default function ContractMsg({
                     </button>
                   </div>
                   <div className="text-sm text-gray-600 break-all">
-                    {JSON.stringify(
-                      interactSwitchRes(item?.result?.type, item?.result?.value)
-                    )}
+                    {interactSwitchRes(item?.result?.type, item?.result?.value)}
+
                     {item?.result?.type ===
                     'core::starknet::contract_address::ContractAddress' ? (
                       <CopyBtn value={item?.result?.value} />

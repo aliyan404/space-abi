@@ -1,6 +1,41 @@
 import { Abi, Contract } from 'starknet'
+import { getContractType } from './contarct'
 
-async function getImplementedClass(
+async function isAbiValid(address: string, rpcProvider: any): Promise<boolean> {
+  try {
+    const res = await getNormalAbi(address, rpcProvider)
+    return true
+  } catch (error) {
+    return false
+  }
+}
+
+async function getContractAbi(address: string, rpcProvider: any) {
+  try {
+    const type = await getContractType(address, rpcProvider)
+    const normalAbi = await getNormalAbi(address, rpcProvider)
+    if (type === 'Normal') {
+      return normalAbi
+    } else if (type === 'Proxy') {
+      const classHash = await getImplementedClassHash(
+        normalAbi,
+        address,
+        rpcProvider
+      )
+      const classAbi = getImplementedClassAbi(classHash, rpcProvider)
+      return classAbi
+    }
+  } catch (error) {
+    console.log('getContractAbi error', error)
+  }
+}
+
+async function getNormalAbi(address: string, rpcProvider: any): Promise<Abi> {
+  const { abi } = await rpcProvider.getClassAt(address)
+  return abi
+}
+
+async function getImplementedClassHash(
   abi: Abi,
   contractAddress: string,
   rpcProvider: any
@@ -26,7 +61,6 @@ async function getImplementedClassAbi(
   rpcProvider: any
 ): Promise<Abi> {
   const { abi } = await rpcProvider.getClassByHash(classHash)
-
   return abi
 }
 
@@ -40,5 +74,4 @@ function decimalToHex(decimal: string): string {
   return '0x' + hexString
 }
 
-
-export { getImplementedClass, getImplementedClassAbi }
+export { getImplementedClassHash, getContractAbi, isAbiValid, getImplementedClassAbi }

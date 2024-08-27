@@ -16,63 +16,78 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import useAbi from '@/hooks/useAbi'
 import { useNetProvider } from '@/hooks/useNetProvider'
 import { mainnetProvider, sepoliaProvider } from '@/components/rpc-provider'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import '@/style/home.css'
+import { isAbiValid } from '@/utils/abi'
 
 export default function Home() {
-  // const initailState =
-  //   '0x031b79a7d00cae6fba1c6c2da59c00ea8764eeff1235b8115ed04229211c590e'
-
-  const [contractAddress, setContractAddress] = useState<string>(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('contractAddress') || ''
-    }
-    return ''
-  })
-  const { abi, isMounted } = useAbi(contractAddress)
   const router = useRouter()
-  const { network, setNetwork, setRpcProvider } = useNetProvider()
+  const { network, setNetwork, setRpcProvider, rpcProvider } = useNetProvider()
+  const initailStae = { network: network, address: '' }
+  const [baseMsg, setBaseMsg] = useState<any>(initailStae)
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const savedNetwork = localStorage.getItem('network')
-      if (savedNetwork) {
-        handleNetWork(savedNetwork)
+    const fetchData = async () => {
+      const storedNetwork = localStorage.getItem('network')
+      const storedAddress = localStorage.getItem('address')
+      if (storedNetwork) {
+        setBaseMsg((prev: any) => ({ ...prev, network: storedNetwork }))
+        setNetwork(storedNetwork) 
+        setRpcProvider(
+          storedNetwork === 'mainnet' ? mainnetProvider : sepoliaProvider
+        )
+      }
+      if (storedAddress) {
+        setBaseMsg((prev: any) => ({ ...prev, address: storedAddress }))
+        const res = await isAbiValid(storedAddress, rpcProvider)
+        setIsValid(res === true)
       }
     }
-  }, [])
+    fetchData()
+  }, [rpcProvider])
 
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('contractAddress', contractAddress)
-    }
-  }, [contractAddress])
+  const [isValid, setIsValid] = useState<boolean>(false)
 
   const handleNetWork = (value: string) => {
     if (value === 'mainnet') {
       setNetwork('mainnet')
       setRpcProvider(mainnetProvider)
+      setBaseMsg({ ...baseMsg, network: 'mainnet' })
     } else if (value === 'sepolia') {
       setNetwork('sepolia')
       setRpcProvider(sepoliaProvider)
+      setBaseMsg({ ...baseMsg, network: 'sepolia' })
     }
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('network', value)
-    }
+    localStorage.setItem('network', value)
   }
 
-  const handleLoad = () => {
+  const handleAddress = async (e: any) => {
+    const address = e.target.value
+    setBaseMsg({ ...baseMsg, address })
+    localStorage.setItem('address', address) 
+    const res = await isAbiValid(address, rpcProvider)
+    setIsValid(res === true) 
+  }
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault()
     try {
-      router.push(`/${network}/${contractAddress}`)
-      toast.success('ABI loaded')
-    } catch (e) {
-      console.error(e)
-      toast.error('Invalid ABI')
+      if (baseMsg.address && rpcProvider) {
+        const res = await isAbiValid(baseMsg.address, rpcProvider)
+
+        if (res === true) {
+          router.push(`/${baseMsg.network}/${baseMsg.address}`)
+          toast.success('ABI loaded')
+        } else {
+          toast.error('Invalid ABI')
+        }
+      }
+    } catch (error) {
+      console.log('Confirm Abi error', error)
     }
   }
 
@@ -84,38 +99,40 @@ export default function Home() {
             Space ABI
           </CardTitle>
         </CardHeader>
-        <CardContent className="p-6 space-y-6">
-          <p className="text-gray-600 text-center">
-            Interact with contracts on Starknet.
-          </p>
-          <div className="flex justify-center">
-            <Select value={network} onValueChange={handleNetWork}>
-              <SelectTrigger className="w-48 bg-white border-gray-300 focus:ring-2 focus:ring-blue-500">
-                <SelectValue placeholder="Select network" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="mainnet">Mainnet</SelectItem>
-                <SelectItem value="sepolia">Sepolia</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-          <Input
-            onChange={(e) => setContractAddress(e.target.value)}
-            value={contractAddress}
-            placeholder="Enter contract address"
-            className="w-full bg-white border-gray-300 focus:ring-2 focus:ring-blue-500"
-            required
-          />
-        </CardContent>
-        <CardFooter className="p-6 flex justify-center">
-          <Button
-            onClick={handleLoad}
-            disabled={!isMounted}
-            className="w-48 h-14 text-lg bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg"
-          >
-            {isMounted ? 'Load Contract' : 'Loading...'}
-          </Button>
-        </CardFooter>
+        <form onSubmit={handleSubmit}>
+          <CardContent className="p-6 space-y-6">
+            <p className="text-gray-600 text-center">
+              Interact with contracts on Starknet.
+            </p>
+            <div className="flex justify-center">
+              <Select value={baseMsg.network} onValueChange={handleNetWork}>
+                <SelectTrigger className="w-48 bg-white border-gray-300 focus:ring-2 focus:ring-blue-500">
+                  <SelectValue placeholder="Select network" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="mainnet">Mainnet</SelectItem>
+                  <SelectItem value="sepolia">Sepolia</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <Input
+              onChange={handleAddress}
+              value={baseMsg.address}
+              placeholder="Enter contract address"
+              className="w-full bg-white border-gray-300 focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </CardContent>
+          <CardFooter className="p-6 flex justify-center">
+            <Button
+              type="submit"
+              disabled={isValid ? false : true}
+              className="w-48 h-14 text-lg bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg"
+            >
+              Load Contract
+            </Button>
+          </CardFooter>
+        </form>
       </Card>
     </div>
   )
