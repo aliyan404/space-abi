@@ -77,7 +77,7 @@ export default function ABIForm() {
       <main className="flex flex-col md:flex-row">
         <div
           className={`
-            fixed md:sticky top-0 left-0 h-screen bg-white transition-transform duration-300 ease-in-out z-40
+            fixed top-0 md:top-14 left-0 h-screen bg-white transition-transform duration-300 ease-in-out z-40 md:z-0
             ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
             md:translate-x-0 md:w-[260px] min-w-[260px] max-w-[260px]
             overflow-x-hidden mr-4
@@ -89,7 +89,7 @@ export default function ABIForm() {
             onDelete={handleDelete}
           />
         </div>
-        <div className="flex flex-col md:flex-row w-full">
+        <div className="flex flex-col md:flex-row w-full md:ml-[275px]">
           <div className="w-full md:w-2/3 p-4">
             <FunctionForm
               selectFuctions={selectFunctions}

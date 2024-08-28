@@ -51,7 +51,10 @@ export default function FunctionList({
           className="w-full space-y-2"
         >
           <AccordionItem value="read" className="border-b">
-            <AccordionTrigger className="text-lg font-semibold px-2 py-3 text-blue-600 hover:text-blue-800">
+            <AccordionTrigger
+              className="text-lg font-semibold px-2 py-3 text-blue-600 hover:text-blue-800 !no-underline hover:!no-underline 
+     focus:!no-underline"
+            >
               Read
             </AccordionTrigger>
             <AccordionContent className="p-2 space-y-1">
@@ -70,6 +73,7 @@ export default function FunctionList({
                         : 'text-gray-700 hover:bg-gray-100'
                     }`}
                     onClick={() => handleAdd(fn)}
+                    title={fn.name} // 添加 title 属性以显示完整名称
                   >
                     <span className="truncate">{fn.name}</span>
                     {selectFunctions.find((f) => f.name === fn.name) && (
@@ -84,7 +88,10 @@ export default function FunctionList({
             </AccordionContent>
           </AccordionItem>
           <AccordionItem value="write" className="border-b">
-            <AccordionTrigger className="text-lg font-semibold px-2 py-3 text-purple-600 hover:text-purple-800">
+            <AccordionTrigger
+              className="text-lg font-semibold px-2 py-3 text-purple-600 hover:text-purple-800 !no-underline hover:!no-underline
+     focus:!no-underline"
+            >
               Write
             </AccordionTrigger>
             <AccordionContent className="p-2 space-y-1">
@@ -98,12 +105,13 @@ export default function FunctionList({
                   <Button
                     key={fn.name}
                     variant="ghost"
-                    className={`w-full justify-between text-left py-1 px-2 whitespace-nowrap overflow-hidden ${
+                    className={`w-[200px] justify-between text-left py-1 px-2 whitespace-nowrap overflow-hidden ${
                       selectFunctions.find((f) => f.name === fn.name)
                         ? 'bg-purple-100 text-purple-700'
                         : 'text-gray-700 hover:bg-gray-100'
                     }`}
                     onClick={() => handleAdd(fn)}
+                    title={fn.name}
                   >
                     <span className="truncate">{fn.name}</span>
                     {selectFunctions.find((f) => f.name === fn.name) && (
