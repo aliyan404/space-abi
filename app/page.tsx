@@ -23,6 +23,9 @@ import { useState, useEffect } from 'react'
 import toast from 'react-hot-toast'
 import '@/style/home.css'
 import { isAbiValid } from '@/utils/abi'
+import { Github } from 'lucide-react'
+import QuickItem from './components/QuickItem'
+import { quickAccess } from '@/utils'
 
 export default function Home() {
   const router = useRouter()
@@ -36,7 +39,7 @@ export default function Home() {
       const storedAddress = localStorage.getItem('address')
       if (storedNetwork) {
         setBaseMsg((prev: any) => ({ ...prev, network: storedNetwork }))
-        setNetwork(storedNetwork) 
+        setNetwork(storedNetwork)
         setRpcProvider(
           storedNetwork === 'mainnet' ? mainnetProvider : sepoliaProvider
         )
@@ -68,9 +71,9 @@ export default function Home() {
   const handleAddress = async (e: any) => {
     const address = e.target.value
     setBaseMsg({ ...baseMsg, address })
-    localStorage.setItem('address', address) 
+    localStorage.setItem('address', address)
     const res = await isAbiValid(address, rpcProvider)
-    setIsValid(res === true) 
+    setIsValid(res === true)
   }
 
   const handleSubmit = async (e: any) => {
@@ -123,7 +126,7 @@ export default function Home() {
               required
             />
           </CardContent>
-          <CardFooter className="p-6 flex justify-center">
+          <CardFooter className="p-2 flex flex-col items-center">
             <Button
               type="submit"
               disabled={isValid ? false : true}
@@ -131,6 +134,29 @@ export default function Home() {
             >
               Load Contract
             </Button>
+            <div className="mt-10 flex flex-col items-center">
+              <span className="text-xl">Quick access</span>
+              <div className='flex justify-center items-center mt-2'>
+                {quickAccess.map((i: any) => {
+                  return (
+                    <QuickItem
+                      key={i.name}
+                      item={i}
+                      rpcProvider={mainnetProvider}
+                    />
+                  )
+                })}
+              </div>
+            </div>
+            <div className="mt-5">
+              <a
+                href="https://github.com/aliyan404/space-abi.git"
+                className="mt-4 mb-2 flex items-center text-blue-600 underline"
+              >
+                <Github size={20} />
+                Fork me
+              </a>
+            </div>
           </CardFooter>
         </form>
       </Card>
