@@ -1,3 +1,4 @@
+import { FunctionStateMutability } from '@/types'
 import { Abi } from 'starknet'
 
 function getFunctionList(abi: Abi | undefined): any[] {
@@ -18,4 +19,19 @@ function getFunctionList(abi: Abi | undefined): any[] {
   return functions
 }
 
-export { getFunctionList }
+function isImplementationHashFunction(functionName: string): boolean {
+  const regex = /get.*implementation.*hash/i
+  return regex.test(functionName)
+}
+
+function getStateMutability(func: any): FunctionStateMutability {
+  if ('state_mutability' in func) {
+    return (func as any).state_mutability as FunctionStateMutability
+  }
+  if ('stateMutability' in func) {
+    return (func as any).stateMutability as FunctionStateMutability
+  }
+  return 'external'
+}
+
+export { getFunctionList, isImplementationHashFunction, getStateMutability }

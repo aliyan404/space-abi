@@ -1,5 +1,6 @@
 import { Abi, Contract } from 'starknet'
 import { getContractType } from './contarct'
+import { isImplementationHashFunction } from './function'
 
 async function isAbiValid(address: string, rpcProvider: any): Promise<boolean> {
   try {
@@ -14,6 +15,8 @@ async function getContractAbi(address: string, rpcProvider: any) {
   try {
     const type = await getContractType(address, rpcProvider)
     const normalAbi = await getNormalAbi(address, rpcProvider)
+    console.log('ContractType:', type)
+    console.log('ContractAbi:', normalAbi)
     if (type === 'Normal') {
       return normalAbi
     } else if (type === 'Proxy') {
@@ -41,8 +44,10 @@ async function getImplementedClassHash(
   rpcProvider: any
 ): Promise<string> {
   const getImplementationFn = abi.find(
-    (i: any) => i.name === 'getImplementationHash' && i.type === 'function'
+    (i: any) => isImplementationHashFunction(i.name) && i.type === 'function'
   )
+
+  console.log('getImplementationFn:', getImplementationFn)
 
   const contract = new Contract(abi, contractAddress, rpcProvider)
 
@@ -74,4 +79,9 @@ function decimalToHex(decimal: string): string {
   return '0x' + hexString
 }
 
-export { getImplementedClassHash, getContractAbi, isAbiValid, getImplementedClassAbi }
+export {
+  getImplementedClassHash,
+  getContractAbi,
+  isAbiValid,
+  getImplementedClassAbi,
+}

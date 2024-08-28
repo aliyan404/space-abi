@@ -17,9 +17,12 @@ type InteractReturnType = {
 
 type ContractAddressType = 'Proxy' | 'Normal'
 
+type FunctionStateMutability = 'view' | 'external'
+
 export type {
   CallbackReturnType,
   ContarctMsgReturnType,
   InteractReturnType,
   ContractAddressType,
+  FunctionStateMutability,
 }

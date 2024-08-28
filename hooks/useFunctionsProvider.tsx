@@ -31,8 +31,8 @@ export function FuctionsProvider({
   const updateFunctions = async (address: string, rpcProvider: any) => {
     try {
       const abi = await getContractAbi(address, rpcProvider)
-      const res = await getFunctionList(abi)
-      if (res) {
+      const res = getFunctionList(abi)
+      if (res?.length > 0) {
         setFunctions(res)
         setIsFunctionsReady(true)
       }
