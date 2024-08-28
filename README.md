@@ -5,7 +5,10 @@ A user-friendly tool for seamless interaction with smart contracts on Starknet's
 First, run the development server:
 
 ```bash
-pnpm install
+git clone https://github.com/aliyan404/space-abi.git
+
+npm install
+
 npm run dev
 ```
 
@@ -16,5 +19,5 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
 ## Tips
-This is a learning product. If you have any questions or issues while using it, please inform me immediately. And I wish you a happy mood!
 
+This is a learning product. If you have any questions or issues while using it, please inform me immediately. And I wish you a happy mood!
