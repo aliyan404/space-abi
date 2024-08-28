@@ -19,6 +19,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { TooltipProvider } from '@radix-ui/react-tooltip'
+import { getStateMutability } from '@/utils/function'
 
 export default function FunctionItem({
   fnMsg,
@@ -59,7 +60,7 @@ export default function FunctionItem({
 
     const callback: CallbackReturnType = {
       functionName: fnMsg?.name,
-      stateMutability: fnMsg?.state_mutability,
+      stateMutability: getStateMutability(fnMsg),
       inputs: inputs,
       outputs: outputs,
     }
@@ -127,7 +128,7 @@ export default function FunctionItem({
         </CardContent>
         <CardFooter className="bg-gradient-to-r from-indigo-100 to-purple-100 py-4 px-6 flex justify-between items-center border-t border-indigo-200">
           <div className="text-sm text-indigo-700">{response}</div>
-          {fnMsg?.state_mutability === 'view' ? (
+          {getStateMutability(fnMsg) === 'view' ? (
             <Button
               variant="outline"
               type="submit"

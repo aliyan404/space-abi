@@ -11,6 +11,7 @@ import { X } from 'lucide-react'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import useSWR from 'swr'
 import { useFunctions } from '@/hooks/useFunctionsProvider'
+import { getStateMutability } from '@/utils/function'
 
 export default function FunctionList({
   selectFunctions,
@@ -29,6 +30,8 @@ export default function FunctionList({
       return functions
     }
   )
+
+  console.log('functionsListData:', functionsData)
 
   const handleAdd = (fn: any) => {
     onSelect(fn)
@@ -55,7 +58,7 @@ export default function FunctionList({
               {functionsData
                 ?.filter(
                   (fn: any) =>
-                    fn.state_mutability === 'view' && fn.inputs.length > 0
+                    getStateMutability(fn) === 'view' && fn.inputs.length > 0
                 )
                 ?.map((fn: any) => (
                   <Button
@@ -88,7 +91,8 @@ export default function FunctionList({
               {functionsData
                 ?.filter(
                   (fn: any) =>
-                    fn.state_mutability === 'external' && fn.inputs.length > 0
+                    getStateMutability(fn) === 'external' &&
+                    fn.inputs.length > 0
                 )
                 ?.map((fn: any) => (
                   <Button

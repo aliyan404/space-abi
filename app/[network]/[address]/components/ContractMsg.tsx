@@ -9,6 +9,7 @@ import { ContarctMsgReturnType } from '@/types'
 import { useFunctions } from '@/hooks/useFunctionsProvider'
 import { interact } from '@/utils/contarct'
 import { useNetwork } from '@starknet-react/core'
+import { getStateMutability } from '@/utils/function'
 
 export default function ContractMsg({
   contractAddress,
@@ -22,12 +23,12 @@ export default function ContractMsg({
   const { data, isLoading, mutate } = useSWR(
     ['/contractMsg', isFunctionsReady],
     async () => {
-      console.log('isContractReady, isFunctionReady,', isFunctionsReady)
+      console.log('isFunctionReady,', isFunctionsReady)
       if (isFunctionsReady) {
         const showFunctions =
           functions?.filter(
             (fn: any) =>
-              fn.state_mutability === 'view' && fn.inputs.length === 0
+              getStateMutability(fn) === 'view' && fn.inputs.length === 0
           ) || []
         console.log('showFunctions', showFunctions)
 
@@ -37,7 +38,7 @@ export default function ContractMsg({
               const res = await interact(
                 {
                   functionName: fn.name,
-                  stateMutability: fn.state_mutability,
+                  stateMutability: getStateMutability(fn),
                   inputs: fn.inputs,
                   outputs: fn.outputs,
                 },
@@ -95,7 +96,7 @@ export default function ContractMsg({
         const res = await interact(
           {
             functionName: fn.name,
-            stateMutability: fn.state_mutability,
+            stateMutability: getStateMutability(fn),
             inputs: fn.inputs,
             outputs: fn.outputs,
           },
@@ -163,7 +164,11 @@ export default function ContractMsg({
           </CardTitle>
         </CardHeader>
         <CardContent className="p-6">
-          {isLoading ? (
+          {data.length === 0 ? (
+            <div className="text-center text-gray-500 text-1xl font-bold">
+              No Data
+            </div>
+          ) : isLoading ? (
             <div className="text-center text-gray-500">Loading...</div>
           ) : (
             <div className="space-y-4">

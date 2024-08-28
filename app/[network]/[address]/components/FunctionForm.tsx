@@ -2,6 +2,7 @@
 import { Badge } from '@/components/ui/badge'
 import FunctionItem from './FuntionItem'
 import React from 'react'
+import { getStateMutability } from '@/utils/function'
 
 export default function FunctionForm({
   selectFuctions,
@@ -19,10 +20,9 @@ export default function FunctionForm({
       {['Read', 'Write'].map((type) => {
         const filteredFunctions = selectFuctions.filter(
           (fn: any) =>
-            fn.state_mutability ===
-            (type === 'Read' ? 'view' : 'external')
-        );
-        
+            getStateMutability(fn) === (type === 'Read' ? 'view' : 'external')
+        )
+
         return (
           <div
             key={type}
@@ -38,27 +38,30 @@ export default function FunctionForm({
             </div>
             <div className="p-6 pt-20 space-y-6">
               {filteredFunctions.length > 0 ? (
-                filteredFunctions.map((fn: any, index: number, array: any[]) => (
-                  <React.Fragment key={index}>
-                    <FunctionItem
-                      fnMsg={fn}
-                      onDelete={onDelete}
-                      handleCallback={handleCallback}
-                      response={response && response[fn?.name]}
-                    />
-                    {index < array.length - 1 && (
-                      <hr className="border-t border-gray-200" />
-                    )}
-                  </React.Fragment>
-                ))
+                filteredFunctions.map(
+                  (fn: any, index: number, array: any[]) => (
+                    <React.Fragment key={index}>
+                      <FunctionItem
+                        fnMsg={fn}
+                        onDelete={onDelete}
+                        handleCallback={handleCallback}
+                        response={response && response[fn?.name]}
+                      />
+                      {index < array.length - 1 && (
+                        <hr className="border-t border-gray-200" />
+                      )}
+                    </React.Fragment>
+                  )
+                )
               ) : (
                 <p className="text-gray-500 text-center">
-                  No {type.toLowerCase()} functions selected. Please choose functions from the left panel.
+                  No {type.toLowerCase()} functions selected. Please choose
+                  functions from the left panel.
                 </p>
               )}
             </div>
           </div>
-        );
+        )
       })}
     </div>
   )
