@@ -2,23 +2,18 @@
 
 import { Button } from '@/components/ui/button'
 import { isAbiValid } from '@/utils/abi'
+import { getRpcProvider } from '@/utils/rpcProvider'
 import { useRouter } from 'next/navigation'
 import toast from 'react-hot-toast'
 
-export default function QuickItem({
-  item,
-  rpcProvider,
-}: {
-  item: any
-  rpcProvider: any
-}) {
+export default function QuickItem({ item }: { item: any }) {
   const router = useRouter()
   const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation()
     e.preventDefault()
     try {
-      if (item.address && rpcProvider) {
-        const res = await isAbiValid(item.address, rpcProvider)
+      if (item.address && item.network) {
+        const res = await isAbiValid(item.address, getRpcProvider(item.network))
 
         if (res === true) {
           router.push(`/${item.network}/${item.address}`)
@@ -32,5 +27,14 @@ export default function QuickItem({
     }
   }
 
-  return <Button className='text-md hover:no-underline' variant='link' size='sm' onClick={handleClick}>{item.name}</Button>
+  return (
+    <Button
+      className="text-md hover:no-underline"
+      variant="link"
+      size="sm"
+      onClick={handleClick}
+    >
+      {item.name}
+    </Button>
+  )
 }

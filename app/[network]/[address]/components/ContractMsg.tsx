@@ -1,6 +1,5 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import React, { useState, useEffect } from 'react'
-import { useNetProvider } from '@/hooks/useNetProvider'
 import useSWR from 'swr'
 import LoadingBar from './LoadingBar'
 import { interactSwitchRes, shortenAddress } from '@/utils'
@@ -10,14 +9,15 @@ import { useFunctions } from '@/hooks/useFunctionsProvider'
 import { interact } from '@/utils/contarct'
 import { useNetwork } from '@starknet-react/core'
 import { getStateMutability } from '@/utils/function'
+import { useParams } from 'next/navigation'
 
 export default function ContractMsg({
   contractAddress,
 }: {
   contractAddress: string
 }) {
+  const network = useParams().network as string
   const { functions, isFunctionsReady } = useFunctions()
-  const { network, rpcProvider } = useNetProvider()
   const connectNetwork = useNetwork().chain.name
 
   const { data, isLoading, mutate } = useSWR(
@@ -43,7 +43,6 @@ export default function ContractMsg({
                   outputs: fn.outputs,
                 },
                 contractAddress,
-                rpcProvider,
                 network,
                 connectNetwork
               )
@@ -101,7 +100,6 @@ export default function ContractMsg({
             outputs: fn.outputs,
           },
           contractAddress,
-          rpcProvider,
           network,
           connectNetwork
         )
