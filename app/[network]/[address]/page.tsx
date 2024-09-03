@@ -10,13 +10,12 @@ import { Button } from '@/components/ui/button'
 import { AlignJustify, X } from 'lucide-react'
 import { interactSwitchRes } from '@/utils'
 import { interact } from '@/utils/contarct'
-import { useNetProvider } from '@/hooks/useNetProvider'
 import { useAccount, useNetwork } from '@starknet-react/core'
 
 export default function ABIForm() {
   const params = useParams()
   const contractAddress = params.address as string
-  const { network, rpcProvider } = useNetProvider()
+  const network = params.network as string
   const { account } = useAccount()
   const connectNetwork = useNetwork().chain.name
   const [selectFunctions, setSelectFunctions] = useState<any[]>([])
@@ -37,7 +36,6 @@ export default function ABIForm() {
       const res = await interact(
         value,
         contractAddress,
-        rpcProvider,
         network,
         connectNetwork,
         account

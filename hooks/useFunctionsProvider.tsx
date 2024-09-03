@@ -3,8 +3,8 @@
 import { ContractAddressType } from '@/types'
 import { getContractAbi } from '@/utils/abi'
 import { getFunctionList } from '@/utils/function'
+import { getRpcProvider } from '@/utils/rpcProvider'
 import { createContext, useContext, useEffect, useState } from 'react'
-import { useNetProvider } from './useNetProvider'
 
 interface FunctionsType {
   functions: any[] | null
@@ -18,15 +18,16 @@ const FunctionsContext = createContext<FunctionsType | undefined>(undefined)
 
 export function FuctionsProvider({
   children,
+  network,
   initailAddress,
 }: {
   children: React.ReactNode
+  network: string
   initailAddress: string
 }) {
   const [functions, setFunctions] = useState<any[] | null>(null)
   const [addressType, setAddressType] = useState<ContractAddressType>('Normal')
   const [isFunctionsReady, setIsFunctionsReady] = useState(false)
-  const { rpcProvider } = useNetProvider()
 
   const updateFunctions = async (address: string, rpcProvider: any) => {
     try {
@@ -43,10 +44,11 @@ export function FuctionsProvider({
   }
 
   useEffect(() => {
+    const rpcProvider = getRpcProvider(network)
     if (initailAddress && rpcProvider) {
       updateFunctions(initailAddress, rpcProvider)
     }
-  }, [initailAddress, rpcProvider])
+  }, [initailAddress, network])
 
   return (
     <FunctionsContext.Provider
