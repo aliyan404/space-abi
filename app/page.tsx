@@ -98,8 +98,8 @@ export default function Home() {
     <div className="fixed inset-0 bg-gradient-animate flex items-center justify-center">
       <Card className="w-full max-w-md bg-white/80 backdrop-blur-sm shadow-xl rounded-2xl overflow-hidden">
         <CardHeader className="p-6 pb-0">
-          <CardTitle className="text-4xl font-bold text-center text-blue-600">
-            Space ABI
+          <CardTitle className="text-4xl font-bold text-center text-blue-600 flex justify-center">
+            <img src='/logo.svg' className='w-[200px]' />
           </CardTitle>
         </CardHeader>
         <form onSubmit={handleSubmit}>
