@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-  interaction with smart contracts on Starknet
+  Interaction with smart contracts on Starknet
 <p>
 
 A user-friendly tool for seamless interaction with smart contracts on Starknet's mainnet and Sepolia testnet. This project offers a quick and efficient way to call contract methods using addresses, streamlining the process for developers and users alike..
