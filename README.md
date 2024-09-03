@@ -2,12 +2,10 @@ A user-friendly tool for seamless interaction with smart contracts on Starknet's
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
 git clone https://github.com/aliyan404/space-abi.git
 
-npm install
+npm install --legacy-peer-deps
 
 npm run dev
 ```

@@ -4,6 +4,7 @@ import { getContractAbi } from './abi'
 import toast from 'react-hot-toast'
 import { mainnet, sepolia } from '@starknet-react/chains'
 import { isImplementationHashFunction } from './function'
+import { getRpcProvider } from './rpcProvider'
 
 async function getContractType(
   address: string,
@@ -24,12 +25,12 @@ async function getContractType(
 async function interact(
   value: CallbackReturnType,
   address: string,
-  rpcProvider: any,
   intearctNetwork: string,
   connectNetwork: string,
   account?: any
 ) {
   const chains = { mainnet, sepolia } as const
+  const rpcProvider = getRpcProvider(intearctNetwork)
   try {
     const abi = await getContractAbi(address, rpcProvider)
     const contract = new Contract(abi!, address, rpcProvider)
