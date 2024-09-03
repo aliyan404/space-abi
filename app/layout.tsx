@@ -8,7 +8,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Space ABI',
-  description: 'a satrknet ABI tool',
+  description: 'A user-friendly tool for seamless interaction with smart contracts on Starknet',
 }
 
 export default function RootLayout({
