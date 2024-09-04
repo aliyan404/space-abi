@@ -1,5 +1,5 @@
 {
-  "name": "demo1",
+  "name": "space-abi",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@next/third-parties": "^14.2.7",
     "@nextui-org/button": "^2.0.37",
     "@nextui-org/listbox": "^2.1.25",
     "@nextui-org/system": "^2.2.5",
