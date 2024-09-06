@@ -1,3 +1,5 @@
+'use client'
+
 import { StarknetProvider } from '@/components/starknet-provider'
 import { ThemeProvider } from '@/components/theme-provider'
 import { ReactNode } from 'react'
