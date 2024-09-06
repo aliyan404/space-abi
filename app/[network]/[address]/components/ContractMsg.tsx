@@ -20,7 +20,6 @@ export default function ContractMsg({
 }) {
   const network = useParams().network as string
   const { functions, isFunctionsReady } = useFunctions()
-  const connectNetwork = useNetwork().chain.name
 
   const { data, isLoading, mutate } = useSWR(
     ['/contractMsg', isFunctionsReady],
@@ -46,7 +45,6 @@ export default function ContractMsg({
                 },
                 contractAddress,
                 network,
-                connectNetwork
               )
               return {
                 functionName: fn.name,
@@ -103,7 +101,6 @@ export default function ContractMsg({
           },
           contractAddress,
           network,
-          connectNetwork
         )
         const updatedData = data?.map((item: any) =>
           item.functionName === itemName ? { ...item, result: res } : item
