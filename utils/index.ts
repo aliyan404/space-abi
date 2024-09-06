@@ -67,10 +67,10 @@ const quickAccess = [
       '0x041fd22b238fa21cfcf5dd45a8548974d8263b3a531a60388411c5e230f97023',
   },
   {
-    name: 'Influence',
+    name: 'STRK',
     network: 'mainnet',
     address:
-      '0x0422d33a3638dcc4c62e72e1d6942cd31eb643ef596ccac2351e0e21f6cd4bf4',
+      '0x04718f5a0fc34cc1af16a1cdee98ffb20c31f5cd61d6ab07201858f4287c938d',
   },
 ]
 

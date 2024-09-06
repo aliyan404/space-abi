@@ -87,7 +87,7 @@ export default function Home() {
       <Card className="w-full max-w-md bg-white/80 backdrop-blur-sm shadow-xl rounded-2xl overflow-hidden">
         <CardHeader className="p-6 pb-0">
           <CardTitle className="text-4xl font-bold text-center text-blue-600 flex justify-center items-center gap-4">
-            <img src='/logo.png' className='w-[100px]' />
+            <img src="/logo.png" className="w-[100px]" />
             Space ABI
           </CardTitle>
         </CardHeader>
@@ -127,13 +127,13 @@ export default function Home() {
               <span className="text-xl">Quick access</span>
               <div className="flex justify-center items-center mt-2">
                 {quickAccess.map((i: any) => {
-                  return <QuickItem key={i.name} item={i} />
+                  return <QuickItem key={i.address} item={i} />
                 })}
               </div>
             </div>
             <div className="mt-5">
               <a
-                target='_blank'
+                target="_blank"
                 href="https://github.com/aliyan404/space-abi.git"
                 className="mt-4 mb-2 flex items-center text-blue-600 underline"
               >
