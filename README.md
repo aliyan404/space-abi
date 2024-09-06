@@ -2,7 +2,7 @@
 <p align="center">
   <a href="https://space-abi.vercel.app/">
       <picture>
-        <img alt="logo" src="https://space-abi.vercel.app/logo.png" width="auto" height="60">
+        <img alt="logo" src="https://raw.githubusercontent.com/aliyan404/space-abi/main/public/logo.png" width="auto" height="60">
       </picture>
 </a>
 </p>
@@ -11,7 +11,7 @@
   Interaction with smart contracts on Starknet
 <p>
 
-A user-friendly tool for seamless interaction with smart contracts on Starknet's mainnet and Sepolia testnet. This project offers a quick and efficient way to call contract methods using addresses, streamlining the process for developers and users alike..
+A user-friendly tool for seamless interaction with smart contracts on Starknet. Inspired by [abi.ninjia](https://github.com/BuidlGuidl/abi.ninja). This project offers a quick and efficient way to call contract methods using addresses, streamlining the process for developers and users alike..
 
 ## Getting Started
 

@@ -11,7 +11,7 @@ export default function ConnectModel() {
   const { address } = useAccount()
   const { starknetkitConnectModal } = useStarknetkitConnectModal({
     connectors: connectors as any,
-    modalTheme: 'dark',
+    modalTheme: 'light',
   })
   const [isLoading, setIsLoading] = useState(false)
 
