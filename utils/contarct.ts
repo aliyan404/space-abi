@@ -5,6 +5,7 @@ import toast from 'react-hot-toast'
 import { mainnet, sepolia } from '@starknet-react/chains'
 import { isImplementationHashFunction } from './function'
 import { getRpcProvider } from './rpcProvider'
+import { chainMap } from '@/constants'
 
 async function getContractType(
   address: string,
@@ -26,10 +27,8 @@ async function interact(
   value: CallbackReturnType,
   address: string,
   intearctNetwork: string,
-  connectNetwork: string,
   account?: any
 ) {
-  const chains = { mainnet, sepolia } as const
   const rpcProvider = getRpcProvider(intearctNetwork)
   try {
     const abi = await getContractAbi(address, rpcProvider)
@@ -40,19 +39,11 @@ async function interact(
       console.log(value.functionName, ' result:', res)
       const showRes = stringifyResult(res)
       return { type: value.outputs[0]?.type, value: showRes }
+
     } else if (value?.stateMutability === 'external') {
+      
       if (!account) {
         toast.error('Please connect your wallet')
-        return
-      }
-
-      if (
-        chains[intearctNetwork as keyof typeof chains]?.network !==
-        connectNetwork
-      ) {
-        const expectedNetwork =
-          connectNetwork === chains.sepolia.network ? 'Mainnet' : 'Sepolia'
-        toast.error(`Please switch to ${expectedNetwork} network`)
         return
       }
 

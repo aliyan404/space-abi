@@ -11,13 +11,14 @@ import { AlignJustify, X } from 'lucide-react'
 import { interactSwitchRes } from '@/utils'
 import { interact } from '@/utils/contarct'
 import { useAccount, useNetwork } from '@starknet-react/core'
+import { chainMap } from '@/constants'
+import toast from 'react-hot-toast'
 
 export default function ABIForm() {
-  const params = useParams()
-  const contractAddress = params.address as string
-  const network = params.network as string
+  const { address: contractAddress, network: interactNetwork } = useParams()
   const { account } = useAccount()
-  const connectNetwork = useNetwork().chain.name
+  const connectNetwork = useNetwork()
+  const connectNetworkId = connectNetwork.chain.id
   const [selectFunctions, setSelectFunctions] = useState<any[]>([])
   const [response, setResponse] = useState<Record<string, React.ReactNode>>({})
 
@@ -32,12 +33,19 @@ export default function ABIForm() {
   }
 
   const handleCall = async (value: CallbackReturnType) => {
+    if (
+      chainMap[interactNetwork as keyof typeof chainMap]?.chain?.id !==
+      connectNetworkId
+    ) {
+      toast.error(`Please switch to ${interactNetwork} network`)
+      return
+    }
+
     try {
       const res = await interact(
         value,
-        contractAddress,
-        network,
-        connectNetwork,
+        contractAddress as string,
+        interactNetwork as string,
         account
       )
       setResponse({
