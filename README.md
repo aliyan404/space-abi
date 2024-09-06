@@ -2,7 +2,7 @@
 <p align="center">
   <a href="https://space-abi.vercel.app/">
       <picture>
-        <img alt="logo" src="https://raw.githubusercontent.com/aliyan404/space-abi/main/public/logo.png" width="auto" height="60">
+        <img alt="Space ABI" src="https://raw.githubusercontent.com/aliyan404/space-abi/main/public/logo.png" width="316" height="213">
       </picture>
 </a>
 </p>
