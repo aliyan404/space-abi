@@ -8,11 +8,11 @@ import { useParams } from 'next/navigation'
 import ContractMsg from './components/ContractMsg'
 import { Button } from '@/components/ui/button'
 import { AlignJustify, X } from 'lucide-react'
-import { interactSwitchRes } from '@/utils'
 import { interact } from '@/utils/contarct'
 import { useAccount, useNetwork } from '@starknet-react/core'
 import { chainMap } from '@/constants'
 import toast from 'react-hot-toast'
+import ResItem from './components/ResItem'
 
 export default function ABIForm() {
   const { address: contractAddress, network: interactNetwork } = useParams()
@@ -32,6 +32,17 @@ export default function ABIForm() {
     setSelectFunctions(selectFunctions.filter((f: any) => f.name !== fn.name))
   }
 
+  const [dividedItem, setDividedItem] = useState<{ [key: string]: boolean }>({})
+
+  const handleDevide = (functionName: string) => {
+    setDividedItem((prev) => ({
+      ...prev,
+      [functionName]: !prev[functionName],
+    }))
+  }
+
+  console.log(dividedItem, 'divi')
+
   const handleCall = async (value: CallbackReturnType) => {
     if (
       value.stateMutability === 'external' &&
@@ -49,17 +60,15 @@ export default function ABIForm() {
         interactNetwork as string,
         account
       )
-      setResponse({
-        ...response,
+      setResponse((prevResponse) => ({
+        ...prevResponse,
         [value.functionName]: (
           <div className="bg-white shadow-md rounded-lg p-4 mt-4">
             <h2 className="font-bold text-gray-700 mb-2">Result:</h2>
-            <div className="bg-gray-100 p-2 rounded">
-              {interactSwitchRes(res?.type, res?.value!)}
-            </div>
+            <ResItem res={res} value={value} />
           </div>
         ),
-      })
+      }))
     } catch (error: any) {
       console.log('handleCall error', error)
     }

@@ -16,6 +16,7 @@ export default function DevideBtn({
   onDevide: any
   isDivided: boolean
 }) {
+  console.log('isDivided', isDivided)
   return (
     <TooltipProvider>
       <Tooltip>

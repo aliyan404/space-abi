@@ -96,6 +96,7 @@ export default function FunctionItem({
               </div>
               <div className="relative">
                 <Input
+                  required
                   placeholder={input.name}
                   name={input.name}
                   value={inputValues[input.name] || ''}

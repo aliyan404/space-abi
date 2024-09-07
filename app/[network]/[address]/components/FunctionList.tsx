@@ -31,8 +31,6 @@ export default function FunctionList({
     }
   )
 
-  console.log('functionsListData:', functionsData)
-
   const handleAdd = (fn: any) => {
     onSelect(fn)
   }
@@ -73,7 +71,7 @@ export default function FunctionList({
                         : 'text-gray-700 hover:bg-gray-100'
                     }`}
                     onClick={() => handleAdd(fn)}
-                    title={fn.name} // 添加 title 属性以显示完整名称
+                    title={fn.name}
                   >
                     <span className="truncate">{fn.name}</span>
                     {selectFunctions.find((f) => f.name === fn.name) && (

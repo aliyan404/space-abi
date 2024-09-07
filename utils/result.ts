@@ -10,9 +10,9 @@ function getResType(result: any) {
   }
 }
 
-function devideFormat(value:string,decimals = 18){
+function devideFormat(value: string, decimals = 18) {
+  console.log('devideInputString:', value)
   const bigIntValue = BigInt(value)
-
   const divisor = BigInt(10 ** decimals)
 
   const integerPart = bigIntValue / divisor
@@ -20,23 +20,25 @@ function devideFormat(value:string,decimals = 18){
 
   let fractionalStr = fractionalPart.toString().padStart(decimals, '0')
 
-  fractionalStr = fractionalStr.slice(0, decimals)
+  fractionalStr = fractionalStr.replace(/0+$/, '')
+
+  if (fractionalStr === '') {
+    return integerPart.toString()
+  }
 
   return `${integerPart}.${fractionalStr}`
-
 }
 
+function multiplyFormat(value: string, decimals = 18) {
+  const [integerPart, fractionalPart = ''] = value.split('.')
 
-function multiplyFormat(value:string, decimals = 18) {
-  const [integerPart, fractionalPart = ''] = value.split('.');
+  const paddedFractionalPart = fractionalPart.padEnd(decimals, '0')
 
-  const paddedFractionalPart = fractionalPart.padEnd(decimals, '0');
+  const combinedValue = `${integerPart}${paddedFractionalPart}`
 
-  const combinedValue = `${integerPart}${paddedFractionalPart}`;
+  const trimmedValue = combinedValue.replace(/^0+/, '')
 
-  const trimmedValue = combinedValue.replace(/^0+/, '');
-
-  return trimmedValue || '0';
+  return trimmedValue || '0'
 }
 
 export { getResType, devideFormat, multiplyFormat }

@@ -226,6 +226,7 @@ export default function ContractMsg({
                           ? devideFormat(item?.result?.value)
                           : item?.result?.value}
                         <DevideBtn
+                          key={item.functionName}
                           onDevide={() => handleDevide(item.functionName)}
                           isDivided={dividedItems[item.functionName]}
                         />
