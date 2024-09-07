@@ -34,8 +34,9 @@ export default function ABIForm() {
 
   const handleCall = async (value: CallbackReturnType) => {
     if (
+      value.stateMutability === 'external' &&
       chainMap[interactNetwork as keyof typeof chainMap]?.chain?.id !==
-      connectNetworkId
+        connectNetworkId
     ) {
       toast.error(`Please switch to ${interactNetwork} network`)
       return
@@ -73,7 +74,7 @@ export default function ABIForm() {
   return (
     <div className="relative min-h-screen bg-gray-100">
       <Button
-        className="md:hidden fixed top-2 left-2 z-50 bg-transparent text-blue-500 p-2 rounded "
+        className="md:hidden fixed top-2 left-2 z-50 bg-transparent text-blue-500 p-2 rounded hover:bg-transparent "
         size="icon"
         onClick={toggleSidebar}
       >

@@ -10,7 +10,6 @@ function shortenAddress(address?: string) {
 
 function interactSwitchRes(type: string, value: string) {
   if (type === 'core::felt252') {
-    console.log('felt252:', value)
 
     if (!isValidShortStringInput(value)) return value
 

@@ -2,10 +2,8 @@ import { CallbackReturnType, ContractAddressType } from '@/types'
 import { Contract } from 'starknet'
 import { getContractAbi } from './abi'
 import toast from 'react-hot-toast'
-import { mainnet, sepolia } from '@starknet-react/chains'
 import { isImplementationHashFunction } from './function'
 import { getRpcProvider } from './rpcProvider'
-import { chainMap } from '@/constants'
 
 async function getContractType(
   address: string,
@@ -41,7 +39,7 @@ async function interact(
       return { type: value.outputs[0]?.type, value: showRes }
 
     } else if (value?.stateMutability === 'external') {
-      
+
       if (!account) {
         toast.error('Please connect your wallet')
         return

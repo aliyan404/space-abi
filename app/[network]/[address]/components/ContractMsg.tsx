@@ -9,9 +9,10 @@ import CopyBtn from '@/components/copy-btn'
 import { ContarctMsgReturnType } from '@/types'
 import { useFunctions } from '@/hooks/useFunctionsProvider'
 import { interact } from '@/utils/contarct'
-import { useNetwork } from '@starknet-react/core'
 import { getStateMutability } from '@/utils/function'
 import { useParams } from 'next/navigation'
+import { devideFormat, getResType } from '@/utils/result'
+import DevideBtn from '@/components/devide-btn'
 
 export default function ContractMsg({
   contractAddress,
@@ -44,7 +45,7 @@ export default function ContractMsg({
                   outputs: fn.outputs,
                 },
                 contractAddress,
-                network,
+                network
               )
               return {
                 functionName: fn.name,
@@ -70,6 +71,8 @@ export default function ContractMsg({
 
   const isDataReady =
     data && data.every((item: any) => item.result !== undefined)
+
+  console.log('ContarctMsgData:', data)
 
   const [progress, setProgress] = useState(0)
 
@@ -100,7 +103,7 @@ export default function ContractMsg({
             outputs: fn.outputs,
           },
           contractAddress,
-          network,
+          network
         )
         const updatedData = data?.map((item: any) =>
           item.functionName === itemName ? { ...item, result: res } : item
@@ -118,6 +121,16 @@ export default function ContractMsg({
     'core::felt252',
     data?.find((i: any) => i.functionName === 'name')?.result.value || ''
   )
+
+  const [dividedItems, setDividedItems] = useState<{ [key: string]: boolean }>(
+    {}
+  )
+  const handleDevide = (functionName: string) => {
+    setDividedItems((prev) => ({
+      ...prev,
+      [functionName]: !prev[functionName],
+    }))
+  }
 
   if (!isFunctionsReady || isLoading || !isDataReady) {
     return <LoadingBar progress={progress} message="Loading Contract data..." />
@@ -207,12 +220,23 @@ export default function ContractMsg({
                     </button>
                   </div>
                   <div className="text-sm text-gray-600 break-all">
-                    {interactSwitchRes(item?.result?.type, item?.result?.value)}
+                    {getResType(item?.result) === 'u256' ? (
+                      <>
+                        {dividedItems[item.functionName]
+                          ? devideFormat(item?.result?.value)
+                          : item?.result?.value}
+                        <DevideBtn
+                          onDevide={() => handleDevide(item.functionName)}
+                          isDivided={dividedItems[item.functionName]}
+                        />
+                      </>
+                    ) : (
+                      interactSwitchRes(item?.result?.type, item?.result?.value)
+                    )}
 
-                    {item?.result?.type ===
-                    'core::starknet::contract_address::ContractAddress' ? (
+                    {getResType(item?.result) === 'address' && (
                       <CopyBtn value={item?.result?.value} />
-                    ) : null}
+                    )}
                   </div>
                 </div>
               ))}
