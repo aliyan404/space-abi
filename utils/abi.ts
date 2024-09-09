@@ -1,5 +1,5 @@
 import { Abi, Contract } from 'starknet'
-import { getContractType } from './contarct'
+import { getContractType } from './contract'
 import { isImplementationHashFunction } from './function'
 
 async function isAbiValid(address: string, rpcProvider: any): Promise<boolean> {

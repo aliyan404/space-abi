@@ -2,7 +2,7 @@
 
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { X, Book, Edit } from 'lucide-react'
+import { X, Book, Edit, Loader2 } from 'lucide-react'
 import { useState } from 'react'
 import { CallbackReturnType } from '@/types'
 import {
@@ -20,6 +20,8 @@ import {
 } from '@/components/ui/tooltip'
 import { TooltipProvider } from '@radix-ui/react-tooltip'
 import { getStateMutability } from '@/utils/function'
+import toast from 'react-hot-toast'
+import { isAbiValid } from '@/utils'
 
 export default function FunctionItem({
   fnMsg,
@@ -34,6 +36,9 @@ export default function FunctionItem({
 }) {
   const [inputValues, setInputValues] = useState<any>({})
   const { account } = useAccount()
+  const [isLoading, setIsLoading] = useState(false)
+  const [isAble, setIsAble] = useState(true)
+
   const handleChange = (e: any) => {
     console.log('Input changed:', e.target.name, e.target.value)
     setInputValues({
@@ -51,10 +56,10 @@ export default function FunctionItem({
     })
   }
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault()
-    console.log('fnMsginputs', fnMsg?.inputs)
-    console.log('inputValues', inputValues)
+    setIsAble(false)
+    setIsLoading(true)
     const inputs = fnMsg?.inputs.map((value: any) => inputValues[value.name])
     const outputs = fnMsg?.outputs
 
@@ -65,8 +70,14 @@ export default function FunctionItem({
       outputs: outputs,
     }
 
-    console.log('callback', callback)
-    handleCallback(callback)
+    try {
+      await handleCallback(callback)
+    } catch (error) {
+      toast.error('Error submitting transaction')
+    } finally {
+      setIsLoading(false)
+      setIsAble(true)
+    }
   }
 
   return (
@@ -131,21 +142,31 @@ export default function FunctionItem({
           <div className="text-sm text-indigo-700">{response}</div>
           {getStateMutability(fnMsg) === 'view' ? (
             <Button
+              disabled={!isAble}
               variant="outline"
               type="submit"
               className="bg-white text-purple-600 hover:bg-purple-50 border-purple-300 flex items-center space-x-2"
             >
               <Book size={16} />
-              <span>Read</span>
+              {isLoading ? (
+                <Loader2 className="h-5 w-5 text-gray-300 animate-spin" />
+              ) : (
+                <span>Read</span>
+              )}
             </Button>
           ) : account ? (
             <Button
+              disabled={!isAble}
               variant="outline"
               type="submit"
               className="bg-white text-purple-600 hover:bg-purple-50 border-purple-300 flex items-center space-x-2"
             >
               <Edit size={16} />
-              <span>Write</span>
+              {isLoading ? (
+                <Loader2 className="h-5 w-5 text-gray-300 animate-spin" />
+              ) : (
+                <span>Write</span>
+              )}
             </Button>
           ) : (
             <Button

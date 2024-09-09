@@ -8,7 +8,7 @@ import { useParams } from 'next/navigation'
 import ContractMsg from './components/ContractMsg'
 import { Button } from '@/components/ui/button'
 import { AlignJustify, X } from 'lucide-react'
-import { interact } from '@/utils/contarct'
+import { interact } from '@/utils/contract'
 import { useAccount, useNetwork } from '@starknet-react/core'
 import { chainMap } from '@/constants'
 import toast from 'react-hot-toast'
@@ -51,7 +51,7 @@ export default function ABIForm() {
       )
       setResponse((prevResponse) => ({
         ...prevResponse,
-        [value.functionName]: (
+        [value?.functionName]: (
           <div className="bg-white shadow-md rounded-lg p-4 mt-4">
             <h2 className="font-bold text-gray-700 mb-2">Result:</h2>
             <div className="bg-gray-100 p-2 rounded">

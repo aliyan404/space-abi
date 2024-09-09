@@ -8,7 +8,7 @@ import { interactSwitchRes, shortenAddress } from '@/utils'
 import CopyBtn from '@/components/copy-btn'
 import { ContarctMsgReturnType } from '@/types'
 import { useFunctions } from '@/hooks/useFunctionsProvider'
-import { interact } from '@/utils/contarct'
+import { interact } from '@/utils/contract'
 import { getStateMutability } from '@/utils/function'
 import { useParams } from 'next/navigation'
 import ResItem from '@/app/components/ResItem'
@@ -120,7 +120,6 @@ export default function ContractMsg({
     'core::felt252',
     data?.find((i: any) => i.functionName === 'name')?.result.value || ''
   )
-
 
   if (!isFunctionsReady || isLoading || !isDataReady) {
     return <LoadingBar progress={progress} message="Loading Contract data..." />

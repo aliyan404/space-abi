@@ -1,3 +1,49 @@
+import { shortString } from 'starknet'
+import { shortenAddress } from './address'
+
+function interactSwitchRes(type: string, value: string) {
+  if (type === 'core::felt252') {
+    if (!isValidShortStringInput(value)) return value
+
+    return shortString.decodeShortString(value)
+  }
+
+  if (type === 'core::starknet::contract_address::ContractAddress') {
+    return '0x' + shortenAddress(value)
+  }
+  return value
+}
+
+function isValidShortStringInput(input: string): boolean {
+  const cleanedInput = input.toLowerCase().replace(/^0x/, '')
+
+  const isValidHex = /^[0-9a-f]+$/.test(cleanedInput)
+  const isValidDecimal = /^\d+$/.test(cleanedInput)
+
+  if (!isValidHex && !isValidDecimal) {
+    return false
+  }
+
+  let bigIntValue: bigint
+  try {
+    bigIntValue = isValidHex
+      ? BigInt(`0x${cleanedInput}`)
+      : BigInt(cleanedInput)
+  } catch {
+    return false
+  }
+
+  const max248BitNumber = BigInt('0x' + 'f'.repeat(62))
+  if (bigIntValue < 0 || bigIntValue > max248BitNumber) {
+    return false
+  }
+
+  const hexString = bigIntValue.toString(16).padStart(2, '0')
+  const decodedString = Buffer.from(hexString, 'hex').toString('utf8')
+
+  return decodedString.length <= 31
+}
+
 function getResType(result: any) {
   if (!result) return
 
@@ -41,4 +87,4 @@ function multiplyFormat(value: string, decimals = 18) {
   return trimmedValue || '0'
 }
 
-export { getResType, devideFormat, multiplyFormat }
+export { getResType, devideFormat, multiplyFormat, interactSwitchRes }

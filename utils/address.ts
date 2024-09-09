@@ -11,4 +11,12 @@ function isValidFormat(address: string): boolean {
   return hexRegex.test(address)
 }
 
-export { isValidFormat }
+function shortenAddress(address?: string) {
+  if (!address) return null
+  return `${address?.substring(0, 6)}...${address?.substring(
+    address.length - 4,
+    address.length
+  )}`
+}
+
+export { isValidFormat, shortenAddress }

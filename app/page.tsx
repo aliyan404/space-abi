@@ -23,9 +23,9 @@ import '@/style/home.css'
 import { isAbiValid } from '@/utils/abi'
 import { Github, Loader2 } from 'lucide-react'
 import QuickItem from './components/QuickItem'
-import { quickAccess } from '@/utils'
 import { getRpcProvider } from '@/utils/rpcProvider'
 import { isValidFormat } from '@/utils/address'
+import { quickAccess } from '@/constants'
 
 export default function Home() {
   const router = useRouter()
