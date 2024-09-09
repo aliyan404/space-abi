@@ -11,8 +11,7 @@ import { useFunctions } from '@/hooks/useFunctionsProvider'
 import { interact } from '@/utils/contarct'
 import { getStateMutability } from '@/utils/function'
 import { useParams } from 'next/navigation'
-import { devideFormat, getResType } from '@/utils/result'
-import DevideBtn from '@/components/devide-btn'
+import ResItem from '@/app/components/ResItem'
 
 export default function ContractMsg({
   contractAddress,
@@ -122,15 +121,6 @@ export default function ContractMsg({
     data?.find((i: any) => i.functionName === 'name')?.result.value || ''
   )
 
-  const [dividedItems, setDividedItems] = useState<{ [key: string]: boolean }>(
-    {}
-  )
-  const handleDevide = (functionName: string) => {
-    setDividedItems((prev) => ({
-      ...prev,
-      [functionName]: !prev[functionName],
-    }))
-  }
 
   if (!isFunctionsReady || isLoading || !isDataReady) {
     return <LoadingBar progress={progress} message="Loading Contract data..." />
@@ -220,24 +210,10 @@ export default function ContractMsg({
                     </button>
                   </div>
                   <div className="text-sm text-gray-600 break-all">
-                    {getResType(item?.result) === 'u256' ? (
-                      <>
-                        {dividedItems[item.functionName]
-                          ? devideFormat(item?.result?.value)
-                          : item?.result?.value}
-                        <DevideBtn
-                          key={item.functionName}
-                          onDevide={() => handleDevide(item.functionName)}
-                          isDivided={dividedItems[item.functionName]}
-                        />
-                      </>
-                    ) : (
-                      interactSwitchRes(item?.result?.type, item?.result?.value)
-                    )}
-
-                    {getResType(item?.result) === 'address' && (
-                      <CopyBtn value={item?.result?.value} />
-                    )}
+                    <ResItem
+                      functionName={item?.functionName}
+                      result={item?.result}
+                    />
                   </div>
                 </div>
               ))}

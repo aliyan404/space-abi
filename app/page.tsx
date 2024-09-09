@@ -21,10 +21,11 @@ import { useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
 import '@/style/home.css'
 import { isAbiValid } from '@/utils/abi'
-import { Github } from 'lucide-react'
+import { Github, Loader2 } from 'lucide-react'
 import QuickItem from './components/QuickItem'
 import { quickAccess } from '@/utils'
 import { getRpcProvider } from '@/utils/rpcProvider'
+import { isValidFormat } from '@/utils/address'
 
 export default function Home() {
   const router = useRouter()
@@ -33,14 +34,30 @@ export default function Home() {
     address: '',
   })
   const [isValid, setIsValid] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState<boolean>(false)
 
   useEffect(() => {
     const fetchData = async () => {
       const { address, network } = baseMsg
+
+      if (!isValidFormat(address)) {
+        return
+      }
+
       if (address && network) {
-        await isAbiValid(address, getRpcProvider(network)).then((res) => {
-          setIsValid(res)
-        })
+        setIsLoading(true)
+        try {
+          await isAbiValid(address, getRpcProvider(network)).then((res) => {
+            if (!res) {
+              toast.error('Invalid Contract Address')
+            }
+            setIsValid(res)
+          })
+        } catch (error) {
+          console.log(error)
+        } finally {
+          setIsLoading(false)
+        }
       }
     }
 
@@ -118,10 +135,14 @@ export default function Home() {
           <CardFooter className="p-2 flex flex-col items-center">
             <Button
               type="submit"
-              disabled={!isValid || !baseMsg.address || !baseMsg.network}
+              disabled={!isValid}
               className="w-48 h-14 text-lg bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 ease-in-out transform hover:-translate-y-1 hover:shadow-lg"
             >
-              Load Contract
+              {isLoading ? (
+                <Loader2 className="h-8 w-8 text-white animate-spin" />
+              ) : (
+                'Load Contract'
+              )}
             </Button>
             <div className="mt-10 flex flex-col items-center">
               <span className="text-xl">Quick access</span>

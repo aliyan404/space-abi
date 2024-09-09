@@ -12,7 +12,7 @@ import { interact } from '@/utils/contarct'
 import { useAccount, useNetwork } from '@starknet-react/core'
 import { chainMap } from '@/constants'
 import toast from 'react-hot-toast'
-import ResItem from './components/ResItem'
+import ResItem from '../../components/ResItem'
 
 export default function ABIForm() {
   const { address: contractAddress, network: interactNetwork } = useParams()
@@ -31,17 +31,6 @@ export default function ABIForm() {
   const handleDelete = (fn: any) => {
     setSelectFunctions(selectFunctions.filter((f: any) => f.name !== fn.name))
   }
-
-  const [dividedItem, setDividedItem] = useState<{ [key: string]: boolean }>({})
-
-  const handleDevide = (functionName: string) => {
-    setDividedItem((prev) => ({
-      ...prev,
-      [functionName]: !prev[functionName],
-    }))
-  }
-
-  console.log(dividedItem, 'divi')
 
   const handleCall = async (value: CallbackReturnType) => {
     if (
@@ -65,7 +54,9 @@ export default function ABIForm() {
         [value.functionName]: (
           <div className="bg-white shadow-md rounded-lg p-4 mt-4">
             <h2 className="font-bold text-gray-700 mb-2">Result:</h2>
-            <ResItem res={res} value={value} />
+            <div className="bg-gray-100 p-2 rounded">
+              <ResItem result={res!} functionName={value?.functionName} />
+            </div>
           </div>
         ),
       }))
