@@ -8,11 +8,12 @@ import { useParams } from 'next/navigation'
 import ContractMsg from './components/ContractMsg'
 import { Button } from '@/components/ui/button'
 import { AlignJustify, X } from 'lucide-react'
-import { interact } from '@/utils/contract'
 import { useAccount, useNetwork } from '@starknet-react/core'
 import { chainMap } from '@/constants'
 import toast from 'react-hot-toast'
-import ResItem from '../../components/ResItem'
+import ReadResItem from '../../components/ReadResItem'
+import { read, write } from '@/utils'
+import WriteResItem from '@/app/components/WriteResItem'
 
 export default function ABIForm() {
   const { address: contractAddress, network: interactNetwork } = useParams()
@@ -33,35 +34,58 @@ export default function ABIForm() {
   }
 
   const handleCall = async (value: CallbackReturnType) => {
-    if (
-      value.stateMutability === 'external' &&
-      chainMap[interactNetwork as keyof typeof chainMap]?.chain?.id !==
-        connectNetworkId
-    ) {
-      toast.error(`Please switch to ${interactNetwork} network`)
-      return
-    }
-
-    try {
-      const res = await interact(
-        value,
-        contractAddress as string,
-        interactNetwork as string,
-        account
-      )
-      setResponse((prevResponse) => ({
-        ...prevResponse,
-        [value?.functionName]: (
-          <div className="bg-white shadow-md rounded-lg p-4 mt-4">
-            <h2 className="font-bold text-gray-700 mb-2">Result:</h2>
-            <div className="bg-gray-100 p-2 rounded">
-              <ResItem result={res!} functionName={value?.functionName} />
+    if (value.stateMutability === 'view') {
+      try {
+        const res = await read(
+          value,
+          contractAddress as string,
+          interactNetwork as string
+        )
+        setResponse((prevResponse) => ({
+          ...prevResponse,
+          [value?.functionName]: (
+            <div className="bg-white shadow-md rounded-lg p-4">
+              <h2 className="font-bold text-gray-700 mb-2">Result</h2>
+              <div className="bg-gray-100 p-2 rounded">
+                <ReadResItem result={res!} functionName={value?.functionName} />
+              </div>
             </div>
-          </div>
-        ),
-      }))
-    } catch (error: any) {
-      console.log('handleCall error', error)
+          ),
+        }))
+      } catch (error: any) {
+        console.log('read error', error)
+      }
+    } else if (value.stateMutability === 'external') {
+      if (
+        chainMap[interactNetwork as keyof typeof chainMap]?.chain?.id !==
+        connectNetworkId
+      ) {
+        toast.error(`Please switch to ${interactNetwork} network`)
+        return
+      }
+      try {
+        const res = await write(
+          value,
+          contractAddress as string,
+          interactNetwork as string,
+          account
+        )
+        setResponse((prevResponse) => ({
+          ...prevResponse,
+          [value?.functionName]: (
+            <div className="bg-white shadow-md rounded-lg p-4 max-w-[550px]">
+              <h2 className="font-bold text-gray-700 mb-2">
+                Transaction Receipt
+              </h2>
+              <div className="bg-gray-100 p-2 rounded overflow-x-auto whitespace-nowrap">
+                <WriteResItem result={res} />
+              </div>
+            </div>
+          ),
+        }))
+      } catch (error: any) {
+        console.log('read error', error)
+      }
     }
   }
 

@@ -30,7 +30,7 @@ export default function LinkToScan({
           <Button
             type="button"
             onClick={handleLink}
-            className="p-1 text-xs text-gray-400 hover:text-gray-500 bg-transparent hover:bg-transparent border-none translate-y-[2px]"
+            className="p-1 text-xs text-gray-400 hover:text-gray-500 bg-transparent hover:bg-transparent border-none"
           >
             <Link className="w-5 h-5" />
           </Button>

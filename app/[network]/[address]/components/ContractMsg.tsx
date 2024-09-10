@@ -8,10 +8,10 @@ import { interactSwitchRes, shortenAddress } from '@/utils'
 import CopyBtn from '@/components/copy-btn'
 import { ContarctMsgReturnType } from '@/types'
 import { useFunctions } from '@/hooks/useFunctionsProvider'
-import { interact } from '@/utils/contract'
+import { read } from '@/utils/contract'
 import { getStateMutability } from '@/utils/function'
 import { useParams } from 'next/navigation'
-import ResItem from '@/app/components/ResItem'
+import ReadResItem from '@/app/components/ReadResItem'
 import LinkToScan from '@/components/link-to-scan'
 
 export default function ContractMsg({
@@ -37,7 +37,7 @@ export default function ContractMsg({
         const result = await Promise.all(
           showFunctions.map(async (fn: any) => {
             try {
-              const res = await interact(
+              const res = await read(
                 {
                   functionName: fn.name,
                   stateMutability: getStateMutability(fn),
@@ -95,7 +95,7 @@ export default function ContractMsg({
     const fn = functions?.find((f: any) => f.name === itemName)
     if (fn) {
       try {
-        const res = await interact(
+        const res = await read(
           {
             functionName: fn.name,
             stateMutability: getStateMutability(fn),
@@ -183,7 +183,10 @@ export default function ContractMsg({
                   }`}
                 >
                   <div className="flex justify-between items-center mb-2">
-                    <h3 className="text-lg font-semibold text-gray-800">
+                    <h3
+                      className="text-lg font-semibold text-gray-800 overflow-hidden whitespace-nowrap text-ellipsis cursor-pointer"
+                      title={item.functionName}
+                    >
                       {item.functionName}
                     </h3>
                     <button
@@ -211,7 +214,7 @@ export default function ContractMsg({
                     </button>
                   </div>
                   <div className="text-sm text-gray-600 break-all">
-                    <ResItem
+                    <ReadResItem
                       functionName={item?.functionName}
                       result={item?.result}
                     />

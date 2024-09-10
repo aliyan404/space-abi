@@ -40,7 +40,7 @@ export default function FunctionForm({
               {filteredFunctions.length > 0 ? (
                 filteredFunctions.map(
                   (fn: any, index: number, array: any[]) => (
-                    <React.Fragment key={index}>
+                    <React.Fragment key={fn?.name}>
                       <FunctionItem
                         fnMsg={fn}
                         onDelete={onDelete}

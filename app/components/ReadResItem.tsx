@@ -7,7 +7,7 @@ import { interactSwitchRes } from '@/utils'
 import { devideFormat, getResType } from '@/utils/result'
 import { useState } from 'react'
 
-export default function ResItem({
+export default function ReadResItem({
   functionName,
   result,
 }: {

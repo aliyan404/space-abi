@@ -138,8 +138,8 @@ export default function FunctionItem({
             </div>
           ))}
         </CardContent>
-        <CardFooter className="bg-gradient-to-r from-indigo-100 to-purple-100 py-4 px-6 flex justify-between items-center border-t border-indigo-200">
-          <div className="text-sm text-indigo-700">{response}</div>
+        <CardFooter className="bg-gradient-to-r from-indigo-100 to-purple-100 py-4 px-6 flex justify-between items-start border-t border-indigo-200">
+          <div className="text-sm text-indigo-700 mr-2">{response}</div>
           {getStateMutability(fnMsg) === 'view' ? (
             <Button
               disabled={!isAble}

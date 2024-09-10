@@ -24,7 +24,7 @@ export function DisConnectModel() {
 
   useEffect(() => {
     if (state.value) {
-      toast.success(`Copied ${state.value}`)
+      toast.success(`Copied successfully!`)
     }
     if (state.error) {
       toast.error(`Unable to copy value, ${state.error.message}`)
