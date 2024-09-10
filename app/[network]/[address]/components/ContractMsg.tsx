@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import React, { useState, useEffect } from 'react'
 import useSWR from 'swr'
-import LoadingBar from './LoadingBar'
+import LoadingBar from '../../../../components/loading-bar'
 import { interactSwitchRes, shortenAddress } from '@/utils'
 import CopyBtn from '@/components/copy-btn'
 import { ContarctMsgReturnType } from '@/types'
@@ -12,6 +12,7 @@ import { interact } from '@/utils/contract'
 import { getStateMutability } from '@/utils/function'
 import { useParams } from 'next/navigation'
 import ResItem from '@/app/components/ResItem'
+import LinkToScan from '@/components/link-to-scan'
 
 export default function ContractMsg({
   contractAddress,
@@ -145,6 +146,7 @@ export default function ContractMsg({
                 </span>
                 <CopyBtn value={contractAddress} />
               </div>
+              <LinkToScan network={network} contractAddress={contractAddress} />
             </div>
             <div className="flex items-center space-x-2">
               <span className="font-medium text-gray-600">Network:</span>
