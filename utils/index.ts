@@ -9,3 +9,5 @@ export * from './function'
 export * from './result'
 
 export * from './rpcProvider'
+
+export * from './type'

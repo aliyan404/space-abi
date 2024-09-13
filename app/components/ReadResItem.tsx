@@ -3,8 +3,7 @@
 import CopyBtn from '@/components/copy-btn'
 import DevideBtn from '@/components/devide-btn'
 import { InteractReturnType } from '@/types'
-import { interactSwitchRes } from '@/utils'
-import { devideFormat, getResType } from '@/utils/result'
+import { devideFormat, getValueType, interactSwitchRes } from '@/utils'
 import { useState } from 'react'
 
 export default function ReadResItem({
@@ -25,7 +24,7 @@ export default function ReadResItem({
 
   return (
     <>
-      {getResType(result) === 'u256' ? (
+      {getValueType(result) === 'u256' ? (
         <>
           {dividedItem[functionName]
             ? devideFormat(result?.value)
@@ -40,7 +39,7 @@ export default function ReadResItem({
         interactSwitchRes(result?.type, result?.value)
       )}
 
-      {getResType(result) === 'address' && <CopyBtn value={result?.value} />}
+      {getValueType(result) === 'address' && <CopyBtn value={result?.value} />}
     </>
   )
 }

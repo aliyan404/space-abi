@@ -44,17 +44,7 @@ function isValidShortStringInput(input: string): boolean {
   return decodedString.length <= 31
 }
 
-function getResType(result: any) {
-  if (!result) return
 
-  if (result?.type.toLowerCase().includes('u256')) {
-    return 'u256'
-  }
-
-  if (result?.type.includes('ContractAddress')) {
-    return 'address'
-  }
-}
 
 function devideFormat(value: string, decimals = 18) {
   console.log('devideInputString:', value)
@@ -87,4 +77,4 @@ function multiplyFormat(value: string, decimals = 18) {
   return trimmedValue || '0'
 }
 
-export { getResType, devideFormat, multiplyFormat, interactSwitchRes }
+export { devideFormat, multiplyFormat, interactSwitchRes }

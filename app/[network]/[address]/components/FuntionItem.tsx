@@ -49,7 +49,9 @@ export default function FunctionItem({
 
   const handleAddDecimals = (inputName: string) => {
     const currentValue = inputValues[inputName] || ''
-    const newValue = currentValue ? `${currentValue}${'0'.repeat(18)}` : ''
+
+    const valueAsBigInt = BigInt(Math.floor(parseFloat(currentValue) * 1e18))
+    const newValue = valueAsBigInt.toString()
     setInputValues({
       ...inputValues,
       [inputName]: newValue,
