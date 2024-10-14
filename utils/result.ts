@@ -7,9 +7,13 @@ function interactSwitchRes(type: string, value: string) {
 
     return shortString.decodeShortString(value)
   }
-
   if (type === 'core::starknet::contract_address::ContractAddress') {
-    return '0x' + shortenAddress(value)
+    const valToBigint = BigInt(value.startsWith('0x') ? value.slice(2) : value)
+    const hexString = valToBigint.toString(16)
+    const paddedHexString = hexString.padStart(64, '0')
+    const shortAddr = shortenAddress(paddedHexString)
+
+    return `0x${shortAddr}`
   }
   return value
 }
@@ -43,8 +47,6 @@ function isValidShortStringInput(input: string): boolean {
 
   return decodedString.length <= 31
 }
-
-
 
 function devideFormat(value: string, decimals = 18) {
   console.log('devideInputString:', value)

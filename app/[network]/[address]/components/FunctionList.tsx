@@ -27,6 +27,7 @@ export default function FunctionList({
   const { data: functionsData } = useSWR(
     ['getFunctionList', isFunctionsReady],
     async () => {
+      console.log('functionList:', functions)
       return functions
     }
   )
@@ -94,11 +95,7 @@ export default function FunctionList({
             </AccordionTrigger>
             <AccordionContent className="p-2 space-y-1">
               {functionsData
-                ?.filter(
-                  (fn: any) =>
-                    getStateMutability(fn) === 'external' &&
-                    fn.inputs.length > 0
-                )
+                ?.filter((fn: any) => getStateMutability(fn) === 'external')
                 ?.map((fn: any) => (
                   <Button
                     key={fn.name}
