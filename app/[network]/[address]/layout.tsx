@@ -7,7 +7,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <Providers>
       <div className="flex flex-col h-screen">
         <Header />
-        <div className="flex-1 overflow-auto">{children}</div>
+        {children}
       </div>
     </Providers>
   )
