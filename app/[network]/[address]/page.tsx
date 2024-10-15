@@ -14,6 +14,7 @@ import toast from 'react-hot-toast'
 import ReadResItem from '../../components/ReadResItem'
 import { read, write } from '@/utils'
 import WriteResItem from '@/app/components/WriteResItem'
+import { ScrollArea } from '@/components/ui/scroll-area'
 
 export default function ABIForm() {
   const { address: contractAddress, network: interactNetwork } = useParams()
@@ -96,44 +97,46 @@ export default function ABIForm() {
   }
 
   return (
-    <div className="relative min-h-screen bg-gray-100">
-      <Button
-        className="md:hidden fixed top-2 left-2 z-50 bg-transparent text-blue-500 p-2 rounded hover:bg-transparent "
-        size="icon"
-        onClick={toggleSidebar}
-      >
-        {isSidebarOpen ? <X /> : <AlignJustify />}
-      </Button>
+    <ScrollArea className="h-[calc(100vh-44px)]">
+      <div className="relative min-h-screen bg-gray-100">
+        <Button
+          className="md:hidden fixed top-2 left-2 z-50 bg-transparent text-blue-500 p-2 rounded hover:bg-transparent "
+          size="icon"
+          onClick={toggleSidebar}
+        >
+          {isSidebarOpen ? <X /> : <AlignJustify />}
+        </Button>
 
-      <main className="flex flex-col md:flex-row">
-        <div
-          className={`
+        <main className="flex flex-col md:flex-row">
+          <div
+            className={`
             fixed top-0 md:top-14 left-0 h-screen bg-white transition-transform duration-300 ease-in-out z-40 md:z-0
             ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'}
             md:translate-x-0 md:w-[260px] min-w-[260px] max-w-[260px]
             overflow-x-hidden mr-4
           `}
-        >
-          <FunctionList
-            selectFunctions={selectFunctions}
-            onSelect={handleSelect}
-            onDelete={handleDelete}
-          />
-        </div>
-        <div className="flex flex-col md:flex-row w-full md:ml-[275px]">
-          <div className="w-full md:w-2/3 p-4">
-            <FunctionForm
-              selectFuctions={selectFunctions}
+          >
+            <FunctionList
+              selectFunctions={selectFunctions}
+              onSelect={handleSelect}
               onDelete={handleDelete}
-              handleCallback={handleCall}
-              response={response}
             />
           </div>
-          <div className="w-full md:w-1/3 p-4">
-            <ContractMsg contractAddress={contractAddress as string} />
+          <div className="flex flex-col md:flex-row w-full md:ml-[275px]">
+            <div className="w-full md:w-2/3 p-4">
+              <FunctionForm
+                selectFuctions={selectFunctions}
+                onDelete={handleDelete}
+                handleCallback={handleCall}
+                response={response}
+              />
+            </div>
+            <div className="w-full md:w-1/3 p-4">
+              <ContractMsg contractAddress={contractAddress as string} />
+            </div>
           </div>
-        </div>
-      </main>
-    </div>
+        </main>
+      </div>
+    </ScrollArea>
   )
 }
