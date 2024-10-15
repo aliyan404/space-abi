@@ -1,5 +1,4 @@
 import { shortString } from 'starknet'
-import { shortenAddress } from './address'
 
 function interactSwitchRes(type: string, value: string) {
   if (type === 'core::felt252') {
@@ -8,14 +7,15 @@ function interactSwitchRes(type: string, value: string) {
     return shortString.decodeShortString(value)
   }
   if (type === 'core::starknet::contract_address::ContractAddress') {
-    const valToBigint = BigInt(value.startsWith('0x') ? value.slice(2) : value)
-    const hexString = valToBigint.toString(16)
-    const paddedHexString = hexString.padStart(64, '0')
-    const shortAddr = shortenAddress(paddedHexString)
-
-    return `0x${shortAddr}`
+    return decimalToHex(value)
   }
   return value
+}
+
+function decimalToHex(value: string): string {
+  const valToBigint = BigInt(value)
+  const hexString = valToBigint.toString(16)
+  return `0x${hexString}`
 }
 
 function isValidShortStringInput(input: string): boolean {
@@ -79,4 +79,4 @@ function multiplyFormat(value: string, decimals = 18) {
   return trimmedValue || '0'
 }
 
-export { devideFormat, multiplyFormat, interactSwitchRes }
+export { devideFormat, multiplyFormat, interactSwitchRes, decimalToHex }

@@ -3,6 +3,7 @@
 import toast from 'react-hot-toast'
 import { Button } from './ui/button'
 import { CopyIcon } from 'lucide-react'
+import { decimalToHex } from '@/utils'
 
 export default function CopyBtn({ value }: { value: string }) {
   return (
@@ -11,7 +12,7 @@ export default function CopyBtn({ value }: { value: string }) {
       size="icon"
       className="ml-2 p-0 h-auto w-auto hover:bg-transparent focus:ring-0 transition-transform active:scale-90"
       onClick={() => {
-        navigator.clipboard.writeText(value)
+        navigator.clipboard.writeText(decimalToHex(value))
         toast.success('Copied successfully!')
       }}
     >
